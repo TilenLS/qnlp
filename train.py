@@ -67,9 +67,9 @@ df_val = pd.read_csv('dataset/original_data/val.csv', index_col=0)
 df_test = pd.read_csv('dataset/original_data/test.csv', index_col=0)
 
 print("Generating diagrams and converting to circuits:")
-train_circuits, train_labels, train_diagrams = gen_labels(df_train[:10])
-val_circuits, val_labels, val_diagrams = gen_labels(df_val[:10])
-test_circuits, test_labels, test_diagrams = gen_labels(df_test[:10])
+train_circuits, train_labels, train_diagrams = gen_labels(df_train)
+val_circuits, val_labels, val_diagrams = gen_labels(df_val)
+test_circuits, test_labels, test_diagrams = gen_labels(df_test)
 
 all_circuits = train_circuits + val_circuits + test_circuits
 model = NumpyModel.from_diagrams(all_circuits, use_jit=True)
