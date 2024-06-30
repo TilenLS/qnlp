@@ -48,7 +48,7 @@ def gen_labels(df: pd.DataFrame):
     #selected_cols = [random.choice(['referent', 'wrong_referent']) for i in range(len(df))]
     for i, row in tqdm(df.iterrows(), total=len(df)):
         #ref = row[selected_cols[i]]
-        #label = [[0.25, 0.25],[0.25, 0.25]] if selected_cols[i] == 'referent' else [[0.25, 0.25],[0.25, 0.25]]
+        # label = [[0.25, 0.25],[0.25, 0.25]] if selected_cols[i] == 'referent' else [[0.25, 0.25],[0.25, 0.25]]
         label = [[0.25, 0.25],[0.25, 0.25]]
         sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', 'referent']]
 
@@ -67,9 +67,9 @@ df_val = pd.read_csv('dataset/original_data/val.csv', index_col=0)
 df_test = pd.read_csv('dataset/original_data/test.csv', index_col=0)
 
 print("Generating diagrams and converting to circuits:")
-train_circuits, train_labels, train_diagrams = gen_labels(df_train)
-val_circuits, val_labels, val_diagrams = gen_labels(df_val)
-test_circuits, test_labels, test_diagrams = gen_labels(df_test)
+train_circuits, train_labels, train_diagrams = gen_labels(df_train[:10])
+val_circuits, val_labels, val_diagrams = gen_labels(df_val[:10])
+test_circuits, test_labels, test_diagrams = gen_labels(df_test[:10])
 
 all_circuits = train_circuits + val_circuits + test_circuits
 model = NumpyModel.from_diagrams(all_circuits, use_jit=True)
