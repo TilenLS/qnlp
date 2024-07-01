@@ -8,6 +8,7 @@ from tqdm import tqdm
 import random
 import datetime
 from discopro.anaphora import connect_anaphora_on_top
+import sys
 
 remove_cups = RemoveCupsRewriter()
 
@@ -59,7 +60,7 @@ def gen_labels(df: pd.DataFrame):
             circuits.append(circ)
             labels.append(label)
         except Exception as e:
-            print("Error: ", e)
+            tqdm.write(f"Error: {e}".strip(), file=sys.stderr)
     return circuits, labels, diagrams
 
 df_train = pd.read_csv('dataset/original_data/train.csv', index_col=0)
