@@ -68,9 +68,9 @@ df_val = pd.read_csv('dataset/original_data/val.csv', index_col=0)
 df_test = pd.read_csv('dataset/original_data/test.csv', index_col=0)
 
 print("Generating diagrams and converting to circuits:")
-train_circuits, train_labels, train_diagrams = gen_labels(df_train[:10])
-val_circuits, val_labels, val_diagrams = gen_labels(df_val[:10])
-test_circuits, test_labels, test_diagrams = gen_labels(df_test[:10])
+train_circuits, train_labels, train_diagrams = gen_labels(df_train[:len(df_train)//10])
+val_circuits, val_labels, val_diagrams = gen_labels(df_val[:len(df_val)//10])
+test_circuits, test_labels, test_diagrams = gen_labels(df_test[:len(df_test)//10])
 
 all_circuits = train_circuits + val_circuits + test_circuits
 model = NumpyModel.from_diagrams(all_circuits, use_jit=True)
@@ -102,4 +102,4 @@ def main(EPOCHS: int, SEED: int, BATCH_SIZE: int) -> None:
     print('Test accuracy:', test_acc)
 
 print("Learning circuit parameters:")
-main(100, random.randrange(0,400), 10)
+main(100, random.randrange(0,400), 15)
