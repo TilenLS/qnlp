@@ -4,6 +4,7 @@ from tqdm import tqdm
 from discopro.grammar import tensor
 from lambeq import BobcatParser, NumpyModel, AtomicType, Rewriter, Dataset, QuantumTrainer, SPSAOptimizer , AtomicType, IQPAnsatz, RemoveCupsRewriter
 from lambeq.backend.grammar import Ty
+from lambeq.training import BinaryCrossEntropyLoss
 from tqdm import tqdm
 import random
 import datetime
@@ -68,14 +69,14 @@ df_val = pd.read_csv('dataset/original_data/val.csv', index_col=0)
 df_test = pd.read_csv('dataset/original_data/test.csv', index_col=0)
 
 print("Generating diagrams and converting to circuits:")
-train_circuits, train_labels, train_diagrams = gen_labels(df_train[:len(df_train)//10])
-val_circuits, val_labels, val_diagrams = gen_labels(df_val[:len(df_val)//10])
-test_circuits, test_labels, test_diagrams = gen_labels(df_test[:len(df_test)//10])
+train_circuits, train_labels, train_diagrams = gen_labels(df_train)
+val_circuits, val_labels, val_diagrams = gen_labels(df_val)
+test_circuits, test_labels, test_diagrams = gen_labels(df_test)
 
 all_circuits = train_circuits + val_circuits + test_circuits
 model = NumpyModel.from_diagrams(all_circuits, use_jit=True)
-loss = lambda y_hat, y: -np.sum(y * np.log(y_hat)) / len(y)  # binary cross-entropy loss
-acc = lambda y_hat, y: np.sum(np.round(y_hat) == np.array(y)) / len(y) / 2  # half due to double-counting
+loss = BinaryCrossEntropyLoss(use_jax=True)
+acc = lambda y_hat, y: np.sqrt(np.mean((y_hat-y)**2)/2)
 eval_metrics = {"acc": acc}
 
 def main(EPOCHS: int, SEED: int, BATCH_SIZE: int) -> None:
@@ -97,9 +98,9 @@ def main(EPOCHS: int, SEED: int, BATCH_SIZE: int) -> None:
     now = datetime.datetime.now()
     t = now.strftime("%Y-%m-%d_%H_%M_%S")
     print(t)
-    trainer.fit(train_dataset, val_dataset, eval_interval=1, log_interval=1)
+    trainer.fit(train_dataset, val_dataset, eval_interval=1, log_interval=1, eval_mode='step')
     test_acc = acc(model(test_circuits), test_labels)
     print('Test accuracy:', test_acc)
 
 print("Learning circuit parameters:")
-main(100, random.randrange(0,400), 15)
+main(500, random.randrange(0,400), 20)
