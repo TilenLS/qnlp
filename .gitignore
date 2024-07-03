@@ -1,6 +1,7 @@
 # Custom 
 .DS_Store
-err_logs
+err_logs/
+nohup.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

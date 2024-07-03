@@ -52,7 +52,7 @@ def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='none'):
 
 def gen_labels(path: str, verbose=False):
     df = pd.read_csv(path, index_col=0)
-    df = df[:10]
+    df = df
     
     if not os.path.exists(os.getcwd()+'/err_logs'):
         os.mkdir(os.getcwd()+'/err_logs')
