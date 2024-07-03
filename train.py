@@ -1,15 +1,18 @@
 import numpy as np 
 import pandas as pd 
-from tqdm import tqdm 
-from discopro.grammar import tensor
-from lambeq import BobcatParser, NumpyModel, AtomicType, Rewriter, Dataset, QuantumTrainer, SPSAOptimizer , AtomicType, IQPAnsatz, RemoveCupsRewriter
-from lambeq.backend.grammar import Ty
-from lambeq.training import BinaryCrossEntropyLoss
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 import random
 import datetime
-from discopro.anaphora import connect_anaphora_on_top
+import os
 import sys
+
+from discopro.grammar import tensor
+from discopro.anaphora import connect_anaphora_on_top
+from lambeq import BobcatParser, NumpyModel, AtomicType, Rewriter, Dataset, QuantumTrainer, SPSAOptimizer , AtomicType, IQPAnsatz, RemoveCupsRewriter, UnifyCodomainRewriter, BinaryCrossEntropyLoss
+from lambeq.backend.grammar import Spider, Ty
+from lambeq.backend.quantum import Box, qubit, SelfConjugate, Ry, Diagram
+from contextuality.model import Model, Scenario, CyclicScenario
 
 remove_cups = RemoveCupsRewriter()
 
@@ -30,27 +33,34 @@ P = AtomicType.PREPOSITIONAL_PHRASE
 
 ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3) 
 
-def generate_diagram(diagram, pro, ref):
-
+def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='none'):
+    diagram1 = parser.sentence2diagram(sentence1)
+    diagram2 = parser.sentence2diagram(sentence2)
+    diagram = tensor(diagram1,diagram2)
+    
+    if mode == 'spider':
+        diagram = diagram >> Spider(S, 2, 1)
+    elif mode == 'box':
+        merger = UnifyCodomainRewriter(Ty('s'))
+        diagram = merger(diagram)
+        
     pro_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == pro.casefold())
     ref_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == ref.casefold())
     final_diagram = connect_anaphora_on_top(diagram, pro_box_idx, ref_box_idx)
     rewritten_diagram = rewriter(remove_cups(final_diagram)).normal_form()
     return rewritten_diagram
 
-def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str):
-    diagram1 = parser.sentence2diagram(sentence1)
-    diagram2 = parser.sentence2diagram(sentence2)
-    diagram = tensor(diagram1,diagram2)
-    diagram = generate_diagram(diagram, pro, ref)
-    return diagram
-
-def gen_labels(df: pd.DataFrame):
+def gen_labels(path: str, verbose=False):
+    df = pd.read_csv(path, index_col=0)
+    df = df[:10]
+    
+    if not os.path.exists(os.getcwd()+'/err_logs'):
+        os.mkdir(os.getcwd()+'/err_logs')
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
+    f = open("err_logs/log_"+path.split('/')[-1].split('.')[-2]+'_'+timestamp+".txt",'w')
+    
     circuits, labels, diagrams = [],[],[]
-    #selected_cols = [random.choice(['referent', 'wrong_referent']) for i in range(len(df))]
-    for i, row in tqdm(df.iterrows(), total=len(df)):
-        #ref = row[selected_cols[i]]
-        # label = [[0.25, 0.25],[0.25, 0.25]] if selected_cols[i] == 'referent' else [[0.25, 0.25],[0.25, 0.25]]
+    for i, row in tqdm(df.iterrows(), total=len(df), position=0, leave=True):
         label = [[0.25, 0.25],[0.25, 0.25]]
         sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', 'referent']]
 
@@ -60,47 +70,42 @@ def gen_labels(df: pd.DataFrame):
             circ = ansatz(diagram)
             circuits.append(circ)
             labels.append(label)
-        except Exception as e:
-            tqdm.write(f"Error: {e}".strip(), file=sys.stderr)
+        except Exception as err:
+            tqdm.write(f"Error: {err}".strip(), file=f)
+            if verbose:
+                tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
+    f.close()
+    
     return circuits, labels, diagrams
 
-df_train = pd.read_csv('dataset/original_data/train.csv', index_col=0)
-df_val = pd.read_csv('dataset/original_data/val.csv', index_col=0)
-df_test = pd.read_csv('dataset/original_data/test.csv', index_col=0)
-
 print("Generating diagrams and converting to circuits:")
-train_circuits, train_labels, train_diagrams = gen_labels(df_train)
-val_circuits, val_labels, val_diagrams = gen_labels(df_val)
-test_circuits, test_labels, test_diagrams = gen_labels(df_test)
+train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv')
+val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv')
+test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv')
 
-all_circuits = train_circuits + val_circuits + test_circuits
-model = NumpyModel.from_diagrams(all_circuits, use_jit=True)
+model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, use_jit=False)
 loss = BinaryCrossEntropyLoss(use_jax=True)
 acc = lambda y_hat, y: np.sqrt(np.mean((y_hat-y)**2)/2)
-eval_metrics = {"acc": acc}
 
-def main(EPOCHS: int, SEED: int, BATCH_SIZE: int) -> None:
+SEED = random.randint(0, 1000)
+BATCH_SIZE = 25
+EPOCHS = 500
 
-    trainer = QuantumTrainer(
-        model,
-        loss_function=loss,
-        epochs=EPOCHS,
-        optimizer=SPSAOptimizer,
-        optim_hyperparams={'a': 0.1, 'c': 0.06, 'A': 0.01 * EPOCHS},
-        evaluate_functions=eval_metrics,
-        evaluate_on_train=True,
-        verbose='text',
-        seed=SEED)
+train_dataset = Dataset(train_circuits, train_labels, batch_size=BATCH_SIZE)
+val_dataset = Dataset(val_circuits, val_labels, shuffle=True)
+test_dataset = Dataset(test_circuits, test_labels)
 
-    train_dataset = Dataset(train_circuits, train_labels, batch_size=BATCH_SIZE)
-    val_dataset = Dataset(val_circuits, val_labels, shuffle=False)
+trainer = QuantumTrainer(model,
+                         loss_function=loss,
+                         optimizer=SPSAOptimizer,
+                         epochs=EPOCHS,
+                         optim_hyperparams={'a': 0.1, 'c': 0.06, 'A': 0.01 * EPOCHS},
+                         evaluate_functions={"err": acc},
+                         evaluate_on_train=True,
+                         verbose='text', 
+                         seed=SEED)
 
-    now = datetime.datetime.now()
-    t = now.strftime("%Y-%m-%d_%H_%M_%S")
-    print(t)
-    trainer.fit(train_dataset, val_dataset, eval_interval=1, log_interval=1, eval_mode='step')
-    test_acc = acc(model(test_circuits), test_labels)
-    print('Test accuracy:', test_acc)
-
-print("Learning circuit parameters:")
-main(500, random.randrange(0,400), 20)
+print("Learning parameters: "+datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S"))
+trainer.fit(train_dataset, val_dataset, eval_interval=1, log_interval=1)
+test_acc = acc(model(test_dataset.data), test_dataset.targets)
+print('Test accuracy:', test_acc)
