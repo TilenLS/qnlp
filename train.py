@@ -33,7 +33,7 @@ P = AtomicType.PREPOSITIONAL_PHRASE
 
 ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3) 
 
-def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='none'):
+def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='default'):
     diagram1 = parser.sentence2diagram(sentence1)
     diagram2 = parser.sentence2diagram(sentence2)
     diagram = tensor(diagram1,diagram2)
@@ -50,9 +50,9 @@ def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='none'):
     rewritten_diagram = rewriter(remove_cups(final_diagram)).normal_form()
     return rewritten_diagram
 
-def gen_labels(path: str, verbose=False):
+def gen_labels(path: str, frac: int, verbose=False, mode='default'):
     df = pd.read_csv(path, index_col=0)
-    df = df
+    df = df.sample(frac=frac)
     
     if not os.path.exists(os.getcwd()+'/err_logs'):
         os.mkdir(os.getcwd()+'/err_logs')
@@ -61,11 +61,15 @@ def gen_labels(path: str, verbose=False):
     
     circuits, labels, diagrams = [],[],[]
     for i, row in tqdm(df.iterrows(), total=len(df), position=0, leave=True):
+        col = random.choice(['referent', 'wrong_referent'])
+        sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', col]]
+        
         label = [[0.25, 0.25],[0.25, 0.25]]
-        sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', 'referent']]
+        if mode == 'spider' or mode == 'box':
+            label = [0, 1] if col == 'referent' else label = [1,0]
 
         try:
-            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip())
+            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), mode=mode)
             diagrams.append(diagram)
             circ = ansatz(diagram)
             circuits.append(circ)
@@ -79,17 +83,19 @@ def gen_labels(path: str, verbose=False):
     return circuits, labels, diagrams
 
 print("Generating diagrams and converting to circuits:")
-train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv')
-val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv')
-test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv')
+mode = input("Choose diagram type (default, spider, box): ")
+frac = input("What % of data to use? (<1)")
+train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv', mode=mode, frac=frac)
+val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv', mode=mode, frac=frac)
+test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv', mode=mode, frac=frac)
 
 model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, use_jit=False)
 loss = BinaryCrossEntropyLoss(use_jax=True)
-acc = lambda y_hat, y: np.sqrt(np.mean((y_hat-y)**2)/2)
+acc = lambda y_hat, y: np.sqrt(np.mean((np.array(y_hat)-np.array(y))**2)/2)
 
-SEED = random.randint(0, 1000)
-BATCH_SIZE = 25
-EPOCHS = 500
+SEED = random.randint(0, 400)
+BATCH_SIZE = 15
+EPOCHS = 200
 
 train_dataset = Dataset(train_circuits, train_labels, batch_size=BATCH_SIZE)
 val_dataset = Dataset(val_circuits, val_labels, shuffle=True)

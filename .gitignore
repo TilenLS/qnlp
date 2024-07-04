@@ -2,6 +2,7 @@
 .DS_Store
 err_logs/
 nohup.out
+runs/*.local
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
