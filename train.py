@@ -64,10 +64,9 @@ def gen_labels(path: str, frac: int, verbose=False, mode='default'):
         col = random.choice(['referent', 'wrong_referent'])
         sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', col]]
         
+        label = [[0.25, 0.25],[0.25, 0.25]]
         if mode == 'spider' or mode == 'box':
-            label = [0, 1] if col == 'referent' else label = [1,0]
-        else:
-            label = [[0.25, 0.25],[0.25, 0.25]]
+            label = [0, 1] if col == 'referent' else [1,0]
 
         try:
             diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), mode=mode)
