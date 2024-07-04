@@ -83,8 +83,10 @@ def gen_labels(path: str, frac: int, verbose=False, mode='default'):
     return circuits, labels, diagrams
 
 print("Generating diagrams and converting to circuits:")
-mode = input("Choose diagram type (default, spider, box): ")
-frac = input("What % of data to use? (<1)")
+mode = str(sys.argv[1])
+frac = int(sys.argv[2])/100
+#mode = input("Choose diagram type (default, spider, box): ")
+#frac = int(input("What % of data to use? (<100) "))/100
 train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv', mode=mode, frac=frac)
 val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv', mode=mode, frac=frac)
 test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv', mode=mode, frac=frac)
