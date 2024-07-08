@@ -45,7 +45,7 @@ def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='disjoint'
         diagram = merger(diagram)
     elif mode == 'skip':
         diagram = diagram >> Spider(S, 2, 1)
-        return rewriter(remove_cups(final_diagram)).normal_form()
+        return rewriter(remove_cups(diagram)).normal_form()
         
     pro_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == pro.casefold())
     ref_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == ref.casefold())
