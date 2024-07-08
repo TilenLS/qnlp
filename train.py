@@ -31,9 +31,9 @@ N = AtomicType.NOUN
 S = AtomicType.SENTENCE
 P = AtomicType.PREPOSITIONAL_PHRASE 
 
-ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3) 
+ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3)
 
-def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='default'):
+def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='disjoint'):
     diagram1 = parser.sentence2diagram(sentence1)
     diagram2 = parser.sentence2diagram(sentence2)
     diagram = tensor(diagram1,diagram2)
@@ -43,6 +43,9 @@ def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='default')
     elif mode == 'box':
         merger = UnifyCodomainRewriter(Ty('s'))
         diagram = merger(diagram)
+    elif mode == 'skip':
+        diagram = diagram >> Spider(S, 2, 1)
+        return rewriter(remove_cups(final_diagram)).normal_form()
         
     pro_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == pro.casefold())
     ref_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == ref.casefold())
