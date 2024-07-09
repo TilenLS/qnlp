@@ -33,27 +33,26 @@ P = AtomicType.PREPOSITIONAL_PHRASE
 
 ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3)
 
-def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, mode='disjoint'):
+def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, join: str=False, cut=False):
     diagram1 = parser.sentence2diagram(sentence1)
     diagram2 = parser.sentence2diagram(sentence2)
-    diagram = tensor(diagram1,diagram2)
+    diagram = tensor(diagram1, diagram2)
     
-    if mode == 'spider':
+    if join == 'spider':
         diagram = diagram >> Spider(S, 2, 1)
-    elif mode == 'box':
+    elif join == 'box':
         merger = UnifyCodomainRewriter(Ty('s'))
         diagram = merger(diagram)
-    elif mode == 'skip':
-        diagram = diagram >> Spider(S, 2, 1)
-        return rewriter(remove_cups(diagram)).normal_form()
-        
-    pro_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == pro.casefold())
-    ref_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == ref.casefold())
-    final_diagram = connect_anaphora_on_top(diagram, pro_box_idx, ref_box_idx)
-    rewritten_diagram = rewriter(remove_cups(final_diagram)).normal_form()
-    return rewritten_diagram
 
-def gen_labels(path: str, frac: int, verbose=False, mode='disjoint'):
+    if cut == False:
+        pro_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == pro.casefold())
+        ref_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == ref.casefold())
+        diagram = connect_anaphora_on_top(diagram, pro_box_idx, ref_box_idx)
+        
+    diagram = rewriter(remove_cups(diagram)).normal_form()
+    return diagram
+
+def gen_labels(path: str, frac: int, verbose=False, mode=False, cut=False):
     df = pd.read_csv(path, index_col=0)
     df = df.sample(frac=frac)
     
@@ -68,11 +67,11 @@ def gen_labels(path: str, frac: int, verbose=False, mode='disjoint'):
         sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', col]]
         
         label = [[0.25, 0.25],[0.25, 0.25]]
-        if mode == 'spider' or mode == 'box' or mode == 'skip':
+        if mode == 'spider' or mode == 'box':
             label = [0, 1] if col == 'referent' else [1,0]
 
         try:
-            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), mode=mode)
+            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), mode=mode, cut=cut)
             diagrams.append(diagram)
             circ = ansatz(diagram)
             circuits.append(circ)
@@ -86,13 +85,17 @@ def gen_labels(path: str, frac: int, verbose=False, mode='disjoint'):
     return circuits, labels, diagrams
 
 print("Generating diagrams and converting to circuits:")
-mode = str(sys.argv[1])
-frac = int(sys.argv[2])/100
+frac = int(sys.argv[1])/100
+mode = str(sys.argv[2])
+cut = str(sys.argv[3])
 #mode = input("Choose diagram type (default, spider, box): ")
 #frac = int(input("What % of data to use? (<100) "))/100
-train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv', mode=mode, frac=frac)
-val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv', mode=mode, frac=frac)
-test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv', mode=mode, frac=frac)
+train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv', 
+                                                          frac=frac, mode=mode, cut=cut)
+val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv', 
+                                                    frac=frac, mode=mode, cut=cut)
+test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv', 
+                                                       frac=frac, mode=mode, cut=cut)
 
 model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, use_jit=False)
 loss = BinaryCrossEntropyLoss(use_jax=True)
