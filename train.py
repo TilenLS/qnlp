@@ -71,7 +71,7 @@ def gen_labels(path: str, frac: int, verbose=False, mode=False, cut=False):
             label = [0, 1] if col == 'referent' else [1,0]
 
         try:
-            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), mode=mode, cut=cut)
+            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), join=mode, cut=cut)
             diagrams.append(diagram)
             circ = ansatz(diagram)
             circuits.append(circ)
