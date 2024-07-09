@@ -1,7 +1,6 @@
 # Custom 
 .DS_Store
 err_logs/
-nohup.out
 runs/*.local
 fasttext/
 
