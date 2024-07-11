@@ -71,7 +71,7 @@ def gen_labels(path: str, frac: int, verbose=False, mode=False, cut=False):
             label = [0, 1] if col == 'referent' else [1,0]
 
         try:
-            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), mode=mode, cut=cut)
+            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), join=mode, cut=cut)
             diagrams.append(diagram)
             circ = ansatz(diagram)
             circuits.append(circ)
@@ -87,7 +87,7 @@ def gen_labels(path: str, frac: int, verbose=False, mode=False, cut=False):
 print("Generating diagrams and converting to circuits:")
 frac = int(sys.argv[1])/100
 mode = str(sys.argv[2])
-cut = str(sys.argv[3])
+cut = bool(sys.argv[3])
 #mode = input("Choose diagram type (default, spider, box): ")
 #frac = int(input("What % of data to use? (<100) "))/100
 train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv', 
