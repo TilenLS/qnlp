@@ -71,7 +71,7 @@ def gen_labels(path: str, frac: int, verbose=False, mode=False, cut=False):
             label = [0, 1] if col == 'referent' else [1,0]
 
         try:
-            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), join=mode, cut=cut)
+            diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), mode=mode, cut=cut)
             diagrams.append(diagram)
             circ = ansatz(diagram)
             circuits.append(circ)
@@ -118,6 +118,24 @@ trainer = QuantumTrainer(model,
                          evaluate_on_train=True,
                          verbose='text', 
                          seed=SEED)
+
+def train(trainer: QuantumTrainer, EPOCH_ARR: [int], BATCH_ARR: [int], SEED_N: int, train_dataset: Dataset, val_dataset: Dataset, test_dataset: Dataset):
+    SEEDS = random.sample(range(1000), SEED_N)
+    trainer.verbose = 'supress'
+    model = trainer.model
+    
+    print("%0s %23s %7s %7s  %12s" % ("Time","Epochs","Batch","Seed","Accuracy"))
+    for EPOCHS in EPOCH_ARR:
+        for BATCH_SIZE in BATCH_ARR:
+            for SEED in SEEDS:
+                trainer.epochs = EPOCHS
+                trainer.optim_hyperparams = {'a': 0.1, 'c': 0.06, 'A': 0.01 * EPOCHS}
+                train_dataset.batch_size = BATCH_SIZE
+                time = datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
+                print("%0s %8s %7s %7s" % (time, EPOCHS, BATCH_SIZE, SEED), end='')
+                trainer.fit(train_dataset, val_dataset, eval_interval=1, log_interval=1)
+                test_acc = acc(model(test_dataset.data), test_dataset.targets)
+                print("%14s" % (round(test_acc, 6)))
 
 print("Learning parameters: "+datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S"))
 trainer.fit(train_dataset, val_dataset, eval_interval=1, log_interval=1)
