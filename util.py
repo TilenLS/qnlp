@@ -1,13 +1,12 @@
 from discopro.grammar import tensor
 from discopro.anaphora import connect_anaphora_on_top
-from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, UnifyCodomainRewriter, Rewriter, QuantumTrainer, Dataset
+from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, UnifyCodomainRewriter, Rewriter, QuantumTrainer, Dataset, IQPAnsatz
 from lambeq.backend.grammar import Spider
 import pandas as pd 
 import random
 from tqdm import tqdm
 import os
 import sys
-import datetime
 
 remove_cups = RemoveCupsRewriter()
 
@@ -25,6 +24,8 @@ rewriter = Rewriter(['auxiliary',
 N = AtomicType.NOUN
 S = AtomicType.SENTENCE
 P = AtomicType.PREPOSITIONAL_PHRASE
+
+ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3)
 
 def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, join=None, cut=False):
     diagram1 = parser.sentence2diagram(sentence1)

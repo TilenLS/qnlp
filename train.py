@@ -2,18 +2,12 @@ import numpy as np
 import random
 import datetime
 import sys
-from lambeq import NumpyModel, AtomicType, Dataset, QuantumTrainer, SPSAOptimizer, IQPAnsatz, BinaryCrossEntropyLoss
+from lambeq import NumpyModel, Dataset, QuantumTrainer, SPSAOptimizer, BinaryCrossEntropyLoss
 from util import sent2dig, gen_labels, train
 
 frac = int(sys.argv[1])/100
 join = str(sys.argv[2])
 cut = bool(sys.argv[3])
-
-N = AtomicType.NOUN
-S = AtomicType.SENTENCE
-P = AtomicType.PREPOSITIONAL_PHRASE 
-
-ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3)
 
 print("Generating diagrams and converting to circuits:")
 
