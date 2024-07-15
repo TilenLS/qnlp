@@ -1,5 +1,7 @@
 # Custom 
 .DS_Store
+.gitignore
+.ipynb_checkpoints
 err_logs/
 runs/*.local
 fasttext/
