@@ -7,6 +7,7 @@ import random
 from tqdm import tqdm
 import os
 import sys
+import datetime
 
 remove_cups = RemoveCupsRewriter()
 
@@ -59,7 +60,7 @@ def gen_labels(path: str, verbose=False, frac=1, join=None, cut=False):
         sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', col]]
         
         label = [[0.25, 0.25],[0.25, 0.25]]
-        if mode == 'spider' or mode == 'box':
+        if join == 'spider' or join == 'box':
             label = [0, 1] if col == 'referent' else [1,0]
 
         try:
