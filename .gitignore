@@ -5,6 +5,7 @@
 err_logs/
 runs/*.local
 fasttext/
+nohup.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
