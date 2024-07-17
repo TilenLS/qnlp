@@ -18,7 +18,7 @@ val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.c
 test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv', 
                                                        frac=frac, join=join, cut=cut)
 
-model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, use_jit=False)
+model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, use_jit=True)
 loss = BinaryCrossEntropyLoss(use_jax=True)
 acc = lambda y_hat, y: np.sqrt(np.mean((np.array(y_hat)-np.array(y))**2)/2)
 
