@@ -1,13 +1,13 @@
 from discopro.grammar import tensor
 from discopro.anaphora import connect_anaphora_on_top
-from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, UnifyCodomainRewriter, Rewriter, QuantumTrainer, Dataset, IQPAnsatz
+from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, UnifyCodomainRewriter, Rewriter, QuantumTrainer, Dataset, IQPAnsatz, NumpyModel
 from lambeq.backend.grammar import Spider
+from lambeq.backend.quantum import Ry, Diagram
 import pandas as pd 
-import random
+import numpy as np
 from tqdm import tqdm
-import os
-import sys
-import datetime
+import datetime, os, sys, pickle, random
+from contextuality.model import Model, Scenario, CyclicScenario
 
 remove_cups = RemoveCupsRewriter()
 
@@ -96,3 +96,96 @@ def train(trainer: QuantumTrainer, EPOCH_ARR: [int], BATCH_ARR: [int], SEED_N: i
                 trainer.fit(train_dataset, val_dataset, eval_interval=1, log_interval=1)
                 test_acc = acc(model(test_dataset.data), test_dataset.targets)
                 print("%14s" % (round(test_acc, 6)))
+
+class data_loader:
+    def __init__(self, scenario: Scenario, model_path: str=None):
+        self.scenario = scenario # Measurement scenario modelling the schema
+
+        # Data
+        self.data = pd.DataFrame(columns=["Sentence", "CF", "SF", "CbD", "DI", "Violation", "Distribution"])
+        self.diagrams = []
+        self.sentences = []
+            
+        if model_path: # NumpyModel with learnt parameters of ansatz circuits
+            self.model = NumpyModel.from_checkpoint(model_path)
+            self.model.initialise_weights()
+        else:
+            self.model = None
+
+        # Measurement basis used in max violation CHSH experiment with their matrix representations
+        self.bases = {'a':Ry(0), 'A':Ry(np.pi/4), 'b':Ry(np.pi/8), 'B':Ry(3*np.pi/8)}
+        self.pairs = {'ab': np.kron(Ry(0).array, Ry(np.pi/8).array),
+                      'aB': np.kron(Ry(0).array, Ry(3*np.pi/8).array),
+                      'Ab': np.kron(Ry(np.pi/4).array, Ry(np.pi/8).array),
+                      'AB': np.kron(Ry(np.pi/4).array, Ry(3*np.pi/8).array)}
+
+    def load_file(self, path: str) -> None | pd.DataFrame | zip:
+        if not path:
+            return
+        elif os.path.splitext(path)[-1] == '.csv':
+            return pd.read_csv(path)
+        elif os.path.splitext(path)[-1] == '.pkl':
+            file = open(path, 'rb')
+            data =  pickle.load(file)
+            file.close()
+            return data
+        else:
+            print("Provided file doesn't match a supported type.")
+            return
+
+    def load_model(self, path: str, variant: str=None) -> None:
+        self.model = NumpyModel.from_checkpoint(model_path)
+
+    def get_data(self, path: str) -> None:
+        if not path:
+            return
+        self.data = self.load_file(path)
+
+    def get_diagrams(self, path: str, cut=True) -> None:
+        if not path:
+            return
+        
+        schema_data = self.load_file(path)
+        if os.path.splitext(path)[-1] == '.pkl':
+            self.sentences, self.diagrams = zip(*schema_data)
+            self.sentences = list(self.sentences)
+            self.diagrams = list(self.diagrams)
+            return
+            
+        for _, row in tqdm(schema_data.iterrows(), total=len(schema_data)):
+            try:
+                s1, s2, pro, ref = row[['sentence1','sentence2','pronoun','referent']]
+                self.diagrams.append(ansatz(sent2dig(s1, s2, pro, ref, cut=cut)))
+                self.sentences.append(s1 + '. ' + s2 + '.')
+            except Exception as err:
+                tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
+        f = open('dataset/sent_circ_pairs'+'_'+str(len(self.diagrams))+'_'+datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")+'.pkl', 'wb')
+        pickle.dump(list(zip(self.sentences, self.diagrams)), f)
+        f.close()
+
+    def get_emp_model(self, diag: Diagram) -> Model:
+        diag_ab = diag.apply_gate(self.bases['a'],0).apply_gate(self.bases['b'],1)
+        diag_aB = diag.apply_gate(self.bases['a'],0).apply_gate(self.bases['B'],1)
+        diag_Ab = diag.apply_gate(self.bases['A'],0).apply_gate(self.bases['b'],1)
+        diag_AB = diag.apply_gate(self.bases['A'],0).apply_gate(self.bases['B'],1)
+
+        pr_dist = self.model.get_diagram_output([diag_ab, diag_aB, diag_Ab, diag_AB])
+        pr_dist = np.reshape(pr_dist, (4,4))
+        return Model(self.scenario, pr_dist)
+    
+    def gen_data(self) -> None:
+        data_dict = {'Sentence':[], 'CF':[], 'SF':[], 'CbD':[], 'DI':[], 'Distribution': []}
+        for diagram, sentence in tqdm(zip(self.diagrams, self.sentences), total=len(self.diagrams)):
+            try:
+                cur_emp_model = self.get_emp_model(diagram)
+                
+                data_dict['CF'].append(cur_emp_model.signalling_fraction())
+                data_dict['SF'].append(cur_emp_model.contextual_fraction())
+                data_dict['CbD'].append(cur_emp_model.CbD_measure())
+                data_dict['DI'].append(cur_emp_model.CbD_direct_influence())
+                data_dict['Distribution'].append(cur_emp_model._distributions)
+                data_dict['Sentence'].append(sentence)
+            except Exception as err:
+                tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
+        self.data = pd.DataFrame(data_dict)
+        self.data.to_csv('dataset/scenario442_' + str(len(self.diagrams)) + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S") + '.csv')
