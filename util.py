@@ -42,7 +42,7 @@ def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, join=None, cut=
     if not cut:
         pro_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == pro.casefold())
         ref_box_idx = next(i for i, box in enumerate(diagram.boxes) if box.name.casefold() == ref.casefold())
-        diagram = connect_anaphora(diagram, pro_box_idx, ref_box_idx)
+        diagram = connect_anaphora_on_top(diagram, pro_box_idx, ref_box_idx)
         
     diagram = rewriter(remove_cups(diagram)).normal_form()
     return diagram
@@ -102,7 +102,7 @@ class data_loader:
         self.scenario = scenario # Measurement scenario modelling the schema
 
         # Data
-        self.data = pd.DataFrame(columns=["Sentence", "CF", "SF", "CbD", "DI", "Violation", "Distribution"])
+        self.data = pd.DataFrame(columns=["Sentence", "CF", "SF", "CbD", "DI", "Distribution"])
         self.diagrams = []
         self.sentences = []
             
@@ -133,6 +133,10 @@ class data_loader:
             print("Provided file doesn't match a supported type.")
             return
 
+    def update_model(self, path: str):
+        self.model = NumpyModel.from_checkpoint(path)
+        self.model.initialise_weights()
+
     def load_model(self, path: str, variant: str=None) -> None:
         self.model = NumpyModel.from_checkpoint(model_path)
 
@@ -141,7 +145,7 @@ class data_loader:
             return
         self.data = self.load_file(path)
 
-    def get_diagrams(self, path: str, cut=True) -> None:
+    def get_diagrams(self, path: str, cut=True, ref_type='referent') -> None:
         if not path:
             return
         
@@ -154,7 +158,7 @@ class data_loader:
             
         for _, row in tqdm(schema_data.iterrows(), total=len(schema_data)):
             try:
-                s1, s2, pro, ref = row[['sentence1','sentence2','pronoun','referent']]
+                s1, s2, pro, ref = row[['sentence1','sentence2','pronoun',ref_type]]
                 self.diagrams.append(ansatz(sent2dig(s1, s2, pro, ref, cut=cut)))
                 self.sentences.append(s1 + '. ' + s2 + '.')
             except Exception as err:
@@ -178,7 +182,6 @@ class data_loader:
         for diagram, sentence in tqdm(zip(self.diagrams, self.sentences), total=len(self.diagrams)):
             try:
                 cur_emp_model = self.get_emp_model(diagram)
-                
                 data_dict['CF'].append(cur_emp_model.signalling_fraction())
                 data_dict['SF'].append(cur_emp_model.contextual_fraction())
                 data_dict['CbD'].append(cur_emp_model.CbD_measure())
@@ -188,4 +191,4 @@ class data_loader:
             except Exception as err:
                 tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
         self.data = pd.DataFrame(data_dict)
-        self.data.to_csv('dataset/scenario442_' + str(len(self.diagrams)) + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S") + '.csv')
+        self.data.to_pickle('dataset/scenario442_' + str(len(self.diagrams)) + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S") + '.csv')
