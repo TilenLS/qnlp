@@ -1,0 +1,37 @@
+Disjoint with wrong referent ~0 EoE:
+	The winning sniper eliminated the terrorist. He was a talented assassin. 0.458053
+	The healthy heart pushed blood with care. It was a single-minded muscle. 0.247563
+	The precision knife scratched the school fence surrounding the park. It was a weak and ineffective. 0.579397 	
+	The proactive people staged a march against the unrepresentative government. They were committing atrocities. 0.517778
+	The hardworking students perused the comedy books. They were enjoying the experience. 0.590415
+
+Disjoint with right referent ~0 EoE: 
+	The activist people organized a strike against the dismissive government. They were denying basic freedoms. CF: 0.765117
+	The sailors escaped off the navy boats. They were saving their crew. CF: 0.706739
+	The energetic people staged a walkout against the government. They were fighting for their rights. CF: 0.570472
+
+Spider high EoE no referent: (1415)
+ 'The resourceful sailors escaped off the boats. They were suffering structural damage.',
+ 'The storm disrupted the commercial flight. It was causing flash floods.',
+ 'The winning sniper killed the dangerous terrorist. He was a barbaric dictator.',
+ 'The sailors left the navy boats. They were facing the storm.',
+ 'The serrated knife scraped the old fence surrounding the garden. It was a separating the yards.',
+ 'The sniper took out the terrorist. He was a ruthless assassin.',
+ 'The monstrous storm destroyed the flight. It was bringing high winds.',
+ 'The diligent birds chose the overlooked seeds. They were a quick snack.',
+ 'The sniper assassinated the notorious terrorist. He was a precise marksman.',
+ 'The sharp knife scratched the fence effortlessly. It was weak and unstable.',
+
+Disjoint high EoE no referent: (572) 
+ 'The skillful heart pushed muscle-oxygenating blood that nourished cells. It was a life-invigorating fluid.',
+ 'The heart pumped blood that maintained life. It was a blood-pressure-controlling liquid.',
+ 'The sniper took aim the ruthless terrorist. He was a barbaric bomb maker.',
+ 'The winning sniper killed the dangerous terrorist. He was a barbaric dictator.',
+ 'The diligent birds pecked at the mouth-watering seeds. They were a filling food.',
+ 'The treacherous storm cancelled the flight. It was flying to Hawaii.',
+ 'The diligent birds chose the overlooked seeds. They were a quick snack.',
+ 'The heart pumped energy-providing blood that rejuvenated cells. It was a brain-oxygenating liquid.',
+ 'The durable knife sliced through the fence smoothly. It was enclosing the prison yard.',
+ 'The storm battered the scheduled flight. It was putting lives in peril.',
+ 'The heart moved brain-enhancing blood with resilience. It was a powerful muscle.',
+ 'The sniper targeted the ruthless terrorist. He was a barbaric drug lord.',

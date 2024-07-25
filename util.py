@@ -191,4 +191,4 @@ class data_loader:
             except Exception as err:
                 tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
         self.data = pd.DataFrame(data_dict)
-        self.data.to_pickle('dataset/scenario442_' + str(len(self.diagrams)) + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S") + '.csv')
+        self.data.to_csv('dataset/scenario442_' + str(len(self.diagrams)) + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S") + '.csv')
