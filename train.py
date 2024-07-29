@@ -41,6 +41,7 @@ trainer = QuantumTrainer(model,
                          seed=SEED)
 
 print("Learning parameters: "+datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S"))
+print("Seed: " + str(SEED))
 trainer.fit(train_dataset, val_dataset, eval_interval=1, log_interval=1)
 test_acc = acc(model(test_dataset.data), test_dataset.targets)
 print('Test accuracy:', test_acc)
