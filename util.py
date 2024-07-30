@@ -8,7 +8,7 @@ import numpy as np
 from tqdm import tqdm
 import datetime, os, sys, pickle, random
 from contextuality.model import Model, Scenario, CyclicScenario
-from funcs import state2dense, partial_trace, calc_vne, std2cyc, cyc2std
+from funcs import state2dense, partial_trace, calc_vne, std2cyc, cyc2std, gen_basis
 import tensornetwork as tn
 
 remove_cups = RemoveCupsRewriter()
@@ -129,7 +129,10 @@ class data_loader:
             self.model.initialise_weights()
 
         # Measurement basis used in max violation CHSH experiment with their matrix representations
-        self.observables = {'a':Ry(0), 'b':Ry(np.pi/8), 'A':Ry(np.pi/4), 'B':Ry(3*np.pi/8)}
+        onb1 = gen_basis(np.pi/2, np.pi/8, gates=True)
+        onb2 = gen_basis(np.pi/2, 5*np.pi/8, gates=True)
+        self.observables = [onb1, onb2, onb1, onb2]
+        #self.observables = {'a':Ry(0), 'b':Ry(np.pi/8), 'A':Ry(np.pi/4), 'B':Ry(3*np.pi/8)}
 
     def read_df(self, path: str):
         if os.path.splitext(path)[-1] == '.csv':
@@ -178,22 +181,28 @@ class data_loader:
             pickle.dump(list(zip(self.sentences, self.diagrams)), f)
             f.close()
 
+    def get_contexts(self, circuit: Diagram) -> [Diagram]:
+        cnxt_11 = cnxt_12 = cnxt_21 = cnxt_22 = circuit 
+        contexts = [cnxt_11, cnxt_12, cnxt_21, cnxt_22]
+
+        i = 0
+        for obs1 in self.observables[:2]:
+            for obs2 in self.observables[2:]:
+                for gate in obs1:
+                    contexts[i] = contexts[i].apply_gate(gate, 0)
+                for gate in obs2:
+                    contexts[i] = contexts[i].apply_gate(gate, 1)
+                i += 1
+            
+        return contexts
+
+
     def get_emp_model(self, circuit: Diagram) -> Model:
         # Measurement contexts ordered to coincide with the cyclic measurement scenario
-        context_ab = circuit.apply_gate(self.observables['a'],0)
-        context_ab = context_ab.apply_gate(self.observables['b'],1)
-        
-        context_aB = circuit.apply_gate(self.observables['a'],0)
-        context_aB = context_aB.apply_gate(self.observables['B'],1)
-        
-        context_Ab = circuit.apply_gate(self.observables['A'],0)
-        context_Ab = context_Ab.apply_gate(self.observables['b'],1)
-        
-        context_AB = circuit.apply_gate(self.observables['A'],0)
-        context_AB = context_AB.apply_gate(self.observables['B'],1)
-        
-        pr_dist = self.model.get_diagram_output([context_ab, context_aB, context_Ab, context_AB])
-        pr_dist = np.reshape(_pr_dist, (4,4))
+        contexts = self.get_contexts(circuit)
+
+        pr_dist = self.model.get_diagram_output(contexts)
+        pr_dist = np.reshape(pr_dist, (4,4))
         
         return Model(self.scenario, std2cyc(pr_dist))
     
@@ -204,8 +213,8 @@ class data_loader:
                 emp_model = self.get_emp_model(diagram)
                 cf = round(emp_model.contextual_fraction(), tol)
                 sf = round(emp_model.signalling_fraction(), tol)
-                cbd = round(emp_model.CbD_measure(), tol)
                 di = round(emp_model.CbD_direct_influence(), tol)
+                cbd = round(emp_model.CbD_measure(), tol)
                 dist = cyc2std(emp_model._distributions)
                 
                 state = self.model.get_output_state([diagram])[0]
@@ -215,8 +224,8 @@ class data_loader:
                 data_dict['Sentence'].append(sentence)
                 data_dict['CF'].append(cf)
                 data_dict['SF'].append(sf)
-                data_dict['DI'].append(cbd)
-                data_dict['CbD'].append(di)
+                data_dict['DI'].append(di)
+                data_dict['CbD'].append(cbd)
                 data_dict['Entropy'].append(eoe)
                 data_dict['State'].append(state)
                 data_dict['Distribution'].append(dist)

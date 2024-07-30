@@ -1,6 +1,7 @@
-import numpy as np 
+import numpy as np
+from lambeq.backend.quantum import Rx, Ry, Rz
 
-def calc_violation(state: np.array) -> float:
+def calc_violation(state: np.array, contexts) -> float:
     expectations = [(np.conjugate(state) @ (contexts[ops] @ state)) for ops in list(contexts.keys())]
     return max([sum(expectations) - 2*exp for exp in expectations])
 
@@ -67,3 +68,46 @@ def cyc2std(pr_dist):
     new_dist[2] = pr_dist[1][[0,2,1,3]]
     new_dist[3] = pr_dist[2]
     return new_dist
+
+def convert_distribution(pr_dist, cyc=False):
+    if cyc:
+        new_dist = np.zeros_like(pr_dist)
+        new_dist[0] = pr_dist[0]
+        new_dist[1] = pr_dist[3][[0,2,1,3]]
+        new_dist[2] = pr_dist[1][[0,2,1,3]]
+        new_dist[3] = pr_dist[2]
+        return new_dist
+    else:
+        new_dist = np.zeros_like(pr_dist)
+        new_dist[0] = pr_dist[0]
+        new_dist[1] = pr_dist[2][[0,2,1,3]]
+        new_dist[2] = pr_dist[3]
+        new_dist[3] = pr_dist[1][[0,2,1,3]]
+        return new_dist
+
+conv_theta = lambda theta: theta / (-2*np.pi)
+conv_phi = lambda phi: phi / (2*np.pi)
+
+def convert_phase(theta, neg=False):
+    return theta / (2 * np.pi * (1-neg*2))
+
+def gen_basis(theta=0, phi=0, tol=1e-9, gates=False):
+    theta1 = convert_phase(theta, 1)
+    phi1 = convert_phase(phi)
+
+    if gates:
+        return (Ry(theta1), Rz(phi1))
+
+    theta2 = convert_phase(np.pi - theta, 1)
+    phi2 = convert_phase(np.pi + phi)
+
+    onb1 = Ry(theta1).array @ Rz(phi1).array
+    onb2 = Ry(theta2).array @ Rz(phi2).array
+
+    onb1.real[abs(onb1.real) < tol] = 0
+    onb1.imag[abs(onb1.imag) < tol] = 0
+    onb2.real[abs(onb2.real) < tol] = 0
+    onb2.imag[abs(onb2.imag) < tol] = 0
+    return (onb1, onb2)
+
+
