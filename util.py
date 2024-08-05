@@ -2,14 +2,16 @@ from discopro.grammar import tensor
 from discopro.anaphora import connect_anaphora_on_top
 from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, UnifyCodomainRewriter, Rewriter, QuantumTrainer, Dataset, IQPAnsatz, NumpyModel
 from lambeq.backend.grammar import Spider
-from lambeq.backend.quantum import Ry, Diagram
+from lambeq.backend.quantum import Ry, Diagram, Box, qubit
 import pandas as pd 
 import numpy as np
 from tqdm import tqdm
 import datetime, os, sys, pickle, random
 from contextuality.model import Model, Scenario, CyclicScenario
-from funcs import state2dense, partial_trace, calc_vne, std2cyc, cyc2std, gen_basis
+from funcs import state2dense, partial_trace, calc_vne, convert_dist, gen_basis, rand_state, get_onb, calc_eoe, log_neg
 import tensornetwork as tn
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 remove_cups = RemoveCupsRewriter()
 
@@ -79,21 +81,21 @@ def gen_labels(path: str, verbose=False, frac=1, sent_model=None, con_ref=True):
         sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', col]]
         
         label = [[0.25, 0.25],[0.25, 0.25]]
-        if join == 'spider' or join == 'box':
+        if sent_model == 'spider' or sent_model == 'box':
             label = [0, 1] if col == 'referent' else [1,0]
+        else:
+            label = [[0,0],[0,1]] if col == 'referent' else [[1,0],[0,0]]
 
         try:
             diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), sent_model=sent_model, con_ref=con_ref)
             diagrams.append(diagram)
-            circ = ansatz(diagram)
-            circuits.append(circ)
+            circuits.append(ansatz(diagram))
             labels.append(label)
         except Exception as err:
             tqdm.write(f"Error: {err}".strip(), file=f)
             if verbose:
                 tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
     f.close()
-    
     return circuits, labels, diagrams
 
 def train(trainer: QuantumTrainer, EPOCH_ARR: [int], BATCH_ARR: [int], SEED_N: int, train_dataset: Dataset, val_dataset: Dataset, test_dataset: Dataset):
@@ -117,22 +119,18 @@ def train(trainer: QuantumTrainer, EPOCH_ARR: [int], BATCH_ARR: [int], SEED_N: i
 class data_loader:
     def __init__(self, scenario: Scenario, model_path: str=None):
         self.scenario = scenario # Measurement scenario modelling the schema
-
-        # Data
-        self.data = pd.DataFrame(columns=["Sentence", "CF", "SF", "CbD", "DI", "Entropy", "Distribution"])
-        self.diagrams = []
+        self.data = pd.DataFrame(columns=["Sentence", "CF", "SF", "CbD", "DI", "Entropy", "Log Neg", "State", "Table"])
+        self.circuits = []
         self.sentences = []
             
-        # NumpyModel with learnt parameters of ansatz circuits
         if model_path:
             self.model = QModel.from_checkpoint(model_path)
             self.model.initialise_weights()
 
         # Measurement basis used in max violation CHSH experiment with their matrix representations
-        onb1 = gen_basis(np.pi/2, np.pi/8, gates=True)
-        onb2 = gen_basis(np.pi/2, 5*np.pi/8, gates=True)
-        self.observables = [onb1, onb2, onb1, onb2]
-        #self.observables = {'a':Ry(0), 'b':Ry(np.pi/8), 'A':Ry(np.pi/4), 'B':Ry(3*np.pi/8)}
+        self.onbs = (gen_basis(np.pi/2, np.pi/8)[0], gen_basis(np.pi/2, 5*np.pi/8)[0])
+        self.observables = {'A': (get_observable('a1', 0, 0), get_observable('a2', np.pi/4, 0)),
+                            'B': (get_observable('b1', np.pi/8, 0), get_observable('b2', 5*np.pi/8, 0))}
 
     def read_df(self, path: str):
         if os.path.splitext(path)[-1] == '.csv':
@@ -152,74 +150,77 @@ class data_loader:
             return
         self.data = self.read_df(path)
 
-    def load_basis(self, new_basis):
-        self.observables = new_basis
+    def load_basis(self, new_obs):
+        self.observables = new_obs
 
-    def load_diagrams(self, path: str, con_ref=True, ref_type='referent', save=True, frac=1) -> None:
+    def load_circuits(self, path: str, con_ref=True, ref_type='referent', save=True, frac=1) -> None:
         if os.path.splitext(path)[-1] == '.pkl':
             file = open(path, 'rb')
             schema_data =  pickle.load(file)
             file.close()
-            self.sentences, self.diagrams = zip(*schema_data)
+            self.sentences, self.circuits = zip(*schema_data)
+
             self.sentences = list(self.sentences)
-            self.diagrams = list(self.diagrams)
+            self.circuits = list(self.circuits)
             self.sentences = self.sentences[:round(frac*len(self.sentences))]
-            self.diagrams = self.diagrams[:round(frac*len(self.diagrams))]
+            self.circuits = self.circuits[:round(frac*len(self.circuits))]
             return
             
         schem_data = self.read_df(path)
         for _, row in tqdm(schema_data.iterrows(), total=len(schema_data)):
             try:
                 s1, s2, pro, ref = row[['sentence1','sentence2','pronoun',ref_type]]
-                self.diagrams.append(ansatz(sent2dig(s1, s2, pro, ref, con_ref=con_ref)))
+                self.circuits.append(ansatz(sent2dig(s1, s2, pro, ref, con_ref=con_ref)))
                 self.sentences.append(s1 + '. ' + s2 + '.')
             except Exception as err:
                 tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
                 
         if save:
             f = open('dataset/sent_circ_pairs'+'_'+datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")+'.pkl', 'wb')
-            pickle.dump(list(zip(self.sentences, self.diagrams)), f)
+            pickle.dump(list(zip(self.sentences, self.circuits)), f)
             f.close()
 
     def get_contexts(self, circuit: Diagram) -> [Diagram]:
-        cnxt_11 = cnxt_12 = cnxt_21 = cnxt_22 = circuit 
-        contexts = [cnxt_11, cnxt_12, cnxt_21, cnxt_22]
+        contexts = [circuit]*4
 
         i = 0
-        for obs1 in self.observables[:2]:
-            for obs2 in self.observables[2:]:
-                for gate in obs1:
-                    contexts[i] = contexts[i].apply_gate(gate, 0)
-                for gate in obs2:
-                    contexts[i] = contexts[i].apply_gate(gate, 1)
+        for obs1 in self.observables['A']:
+            for obs2 in self.observables['B']:
+                contexts[i] = contexts[i].apply_gate(obs1, 0)
+                contexts[i] = contexts[i].apply_gate(obs2, 1)
                 i += 1
             
         return contexts
 
+    def get_dist(self, state):
+        prs1 = abs(np.kron(self.onb[0], self.onb[0]) @ state)**2
+        prs2 = abs(np.kron(self.onb[0], self.onb[1]) @ state)**2
+        prs3 = abs(np.kron(self.onb[1], self.onb[0]) @ state)**2
+        prs4 = abs(np.kron(self.onb[1], self.onb[1]) @ state)**2
+        return np.array([prs1, prs2, prs3, prs4])
 
-    def get_emp_model(self, circuit: Diagram) -> Model:
+    def get_emp_model(self, contexts: [Diagram]) -> Model:
         # Measurement contexts ordered to coincide with the cyclic measurement scenario
-        contexts = self.get_contexts(circuit)
-
         pr_dist = self.model.get_diagram_output(contexts)
         pr_dist = np.reshape(pr_dist, (4,4))
-        
-        return Model(self.scenario, std2cyc(pr_dist))
+        return Model(self.scenario, convert_dist(pr_dist))
     
     def gen_data(self, save=True, tol=6) -> None:
-        data_dict = {'Sentence':[], 'CF':[], 'SF':[], 'DI':[], 'CbD':[], 'Entropy':[], 'State':[], 'Distribution':[]}
-        for diagram, sentence in tqdm(zip(self.diagrams, self.sentences), total=len(self.diagrams)):
+        data_dict = {'Sentence':[], 'CF':[], 'SF':[], 'DI':[], 'CbD':[], 'Entropy':[], 'LogNeg':[], 'State':[], 'Distribution':[]}
+        for circuit, sentence in tqdm(zip(self.circuits, self.sentences), total=len(self.circuits)):
             try:
-                emp_model = self.get_emp_model(diagram)
+                emp_model = self.get_emp_model(self.get_contexts(circuit))
                 cf = round(emp_model.contextual_fraction(), tol)
                 sf = round(emp_model.signalling_fraction(), tol)
                 di = round(emp_model.CbD_direct_influence(), tol)
                 cbd = round(emp_model.CbD_measure(), tol)
-                dist = cyc2std(emp_model._distributions)
+                dist = convert_dist(emp_model._distributions, True)
                 
-                state = self.model.get_output_state([diagram])[0]
-                rho_a, rho_b = partial_trace(state2dense(state))
-                eoe = round(calc_vne(rho_a), tol)
+                state = self.model.get_output_state([circuit])[0]
+                dense_mat = state2dense(state)
+                eoe = calc_eoe(dense_mat)
+                lneg = log_neg(dense_mat)
+
             
                 data_dict['Sentence'].append(sentence)
                 data_dict['CF'].append(cf)
@@ -227,6 +228,7 @@ class data_loader:
                 data_dict['DI'].append(di)
                 data_dict['CbD'].append(cbd)
                 data_dict['Entropy'].append(eoe)
+                data_dict['LogNeg'].append(lneg)
                 data_dict['State'].append(state)
                 data_dict['Distribution'].append(dist)
             except Exception as err:
@@ -251,21 +253,68 @@ def gen_bloch_states(num, rand=False):
             down = np.sin(theta/2)*(np.cos(phi)+1j*np.sin(phi))
             state = np.array([up, 0, 0, down], dtype=np.complex128)
             states.append(state)
+    return (theta_arr, phi_arr, np.array(states, dtype=np.complex128))
+
+def gen_states(num, rand=False, ghz=False):
+    states = []
+    if rand:
+        for n in range(num):
+            states.append(rand_state(ghz=ghz))
+    else:
+        lim = round(num**(1/4))
+        amps = np.linspace(0,1,lim)
+        for alpha in amps:
+            for beta in amps:
+                for gamma in amps:
+                    for delta in amps:
+                        _ = np.array([alpha, beta, gamma, delta])
+                        if sum(_) == 0:
+                            continue
+                        states.append(np.sqrt(_ / sum(_)))
     return np.array(states, dtype=np.complex128)
 
-def gen_states(num, rand=False):
-    states = []
-    lim = round(num**(1/4))
-    if rand:
-        amps = np.random.uniform(size=lim)
-    else:
-        amps = np.linspace(0,1,lim)
-    for alpha in amps:
-        for beta in amps:
-            for gamma in amps:
-                for delta in amps:
-                    _ = np.array([alpha, beta, gamma, delta])
-                    if sum(_) == 0:
-                        continue
-                    states.append(np.sqrt(_ / sum(_)))
-    return np.array(states, dtype=np.complex128)
+def gen_contexts(num=10000):
+    contexts = []
+    num = round(num**0.5)
+    phi_arr = np.linspace(0, np.pi, num)
+    for phi1 in phi_arr:
+        for phi2 in phi_arr:
+            onb1 = gen_basis(np.pi/2, phi1)
+            onb2 = gen_basis(np.pi/2, phi2)
+            context = {'ab': np.kron(onb1[0], onb1[0]), 
+                       'aB': np.kron(onb1[0], onb2[0]), 
+                       'Ab': np.kron(onb2[0], onb1[0]), 
+                       'AB': np.kron(onb2[0], onb2[0])}
+            contexts.append(context)
+    return np.array(contexts)
+
+def get_observable(name="O", theta=0, phi=0):
+    return Box(name=name, dom=qubit, cod=qubit, data=get_onb(theta, phi))
+
+def plot_scatter(fig, x, y, z):
+    cmap = plt.get_cmap('viridis_r')
+    cmap.set_under('red')
+    scat = fig.scatter(x=x, y=y, c=z, cmap=cmap)
+    fig.set_alpha(0.5)
+    plt.colorbar(scat, extend='min')
+    return fig
+
+def plot_dist(fig, data_arr, labels, title, cumulative=False):
+    if len(data_arr) != len(labels):
+        return "Number of datasets does not match number of labels"
+    cmap = plt.get_cmap('turbo', len(data_arr))
+    for i in range(len(data_arr)):
+        sns.kdeplot(data=data_arr[i], color=cmap(i), label=labels[i], fill=True, ax=fig, cut=0, cumulative=cumulative, 
+                    common_norm=True, common_grid=True, log_scale=False)
+    fig.legend()
+    fig.set_title(title)
+    return fig
+
+def plot_heatmap(fig, x, y, z):
+    X,Y = np.meshgrid(x,y)
+    Z=z.reshape(len(x),len(y))
+    Z=np.transpose(Z)
+    hmap = fig.imshow(Z , cmap = 'jet' , interpolation = 'gaussian' , 
+           origin='lower', aspect='equal',  extent = [min(x), max(x), min(y), max(y)])
+    plt.colorbar(hmap, extend='min')
+    return fig

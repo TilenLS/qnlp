@@ -1,5 +1,6 @@
 import numpy as np
 from lambeq.backend.quantum import Rx, Ry, Rz
+from math import sin, cos
 
 def calc_violation(state: np.array, contexts) -> float:
     expectations = [(np.conjugate(state) @ (contexts[ops] @ state)) for ops in list(contexts.keys())]
@@ -40,6 +41,8 @@ def partial_trace(dense_mat):
         rho_b = rho_b + (bra @ dense_mat) @ ket        
     return rho_a, rho_b
 
+
+
 def calc_vne(dense_mat, direct=True):
     if direct:
         ent =  -np.trace(dense_mat @ log_mat(dense_mat))
@@ -48,48 +51,40 @@ def calc_vne(dense_mat, direct=True):
         evals = evals[np.abs(evals) > 1e-12]
         ent = -np.sum(evals * np.log2(evals))
     ent = ent.round(12)
-    return ent.real
+    return abs(ent)
 
 def qrel_ent(mat1, mat2):
     return np.trace(mat1 @ (log_mat(mat1) - log_mat(mat2)))
 
-def std2cyc(pr_dist):
-    new_dist = np.zeros_like(pr_dist)
-    new_dist[0] = pr_dist[0]
-    new_dist[1] = pr_dist[2][[0,2,1,3]]
-    new_dist[2] = pr_dist[3]
-    new_dist[3] = pr_dist[1][[0,2,1,3]]
-    return new_dist
 
-def cyc2std(pr_dist):
-    new_dist = np.zeros_like(pr_dist)
-    new_dist[0] = pr_dist[0]
-    new_dist[1] = pr_dist[3][[0,2,1,3]]
-    new_dist[2] = pr_dist[1][[0,2,1,3]]
-    new_dist[3] = pr_dist[2]
-    return new_dist
-
-def convert_distribution(pr_dist, cyc=False):
-    if cyc:
+def convert_dist(pr_dist, is_cyc=False):
+    if is_cyc:
+        # Converts a cyclic distribution to a standard one 
         new_dist = np.zeros_like(pr_dist)
         new_dist[0] = pr_dist[0]
         new_dist[1] = pr_dist[3][[0,2,1,3]]
         new_dist[2] = pr_dist[1][[0,2,1,3]]
         new_dist[3] = pr_dist[2]
-        return new_dist
     else:
+        # Converts a standard distribution to a cyclic one
         new_dist = np.zeros_like(pr_dist)
         new_dist[0] = pr_dist[0]
         new_dist[1] = pr_dist[2][[0,2,1,3]]
         new_dist[2] = pr_dist[3]
         new_dist[3] = pr_dist[1][[0,2,1,3]]
-        return new_dist
+    return new_dist
 
 conv_theta = lambda theta: theta / (-2*np.pi)
 conv_phi = lambda phi: phi / (2*np.pi)
+normalise =  lambda arr: (arr - min(arr)) / (max(arr) - min(arr))
 
 def convert_phase(theta, neg=False):
     return theta / (2 * np.pi * (1-neg*2))
+
+def get_onb(theta=0, phi=0):
+    ry = np.array([[cos(theta/2), -sin(theta/2)], [sin(theta/2), cos(theta/2)]])
+    rz = np.array([[np.e**(-1j*phi/2),0], [0, np.e**(1j*phi/2)]])
+    return ry @ rz
 
 def gen_basis(theta=0, phi=0, tol=1e-9, gates=False):
     theta1 = convert_phase(theta, 1)
@@ -110,4 +105,64 @@ def gen_basis(theta=0, phi=0, tol=1e-9, gates=False):
     onb2.imag[abs(onb2.imag) < tol] = 0
     return (onb1, onb2)
 
+def get_table(state, cnxt):
+    state1 = cnxt['ab'] @ state
+    state2 = cnxt['aB'] @ state
+    state3 = cnxt['Ab'] @ state
+    state4 = cnxt['AB'] @ state
+    pr_dist = np.array([abs(state1)**2, 
+                        abs(state2)**2,
+                        abs(state3)**2, 
+                        abs(state4)**2])
+    return convert_dist(pr_dist)
 
+def rand_state(n=2, ghz=False):
+    state = np.zeros((n**2), dtype=np.complex128)
+    state.real = np.random.uniform(0,1,(n**2))
+    state.imag = np.random.uniform(0,1,(n**2))
+    if ghz:
+        state[1:n**2-1] = 0 + 0j
+    state = np.sqrt(state / sum(abs(state)))
+    return state 
+
+def partial_transpose(mat, trb=True):
+    res = np.zeros((4,4))
+    comp_basis = np.identity(2)
+    for i in comp_basis:
+        for j in comp_basis:
+            for k in comp_basis:
+                for l in comp_basis:
+                    mat_a = np.outer(i,j)
+                    mat_b = np.outer(k,l)
+                    p = np.trace(mat @ np.kron(mat_a, mat_b))
+                    res = res + p * np.kron(mat_a, mat_b.T)
+    if trb:
+        return res
+    else:
+        return res.T
+
+def trace_norm(mat):
+    mat = mat.conj().T @ mat
+    evals, emat = np.linalg.eig(mat) 
+    emat_inv = np.linalg.inv(emat) 
+
+    matp = emat_inv @ mat @ emat 
+    sqrt_mat = emat @ np.sqrt(matp) @ emat_inv 
+
+    return np.trace(sqrt_mat)
+
+def calc_neg(dense_mat, direct=True):
+    rho_tra = partial_transpose(dense_mat, False)
+    if direct:
+        evals = np.linalg.eigvalsh(rho_tra)
+        evals[evals > 0] = 0
+        return abs(sum(evals))
+    else:
+        return abs((trace_norm(rho_tra) - 1)/2)
+
+def log_neg(dense_mat):
+    return np.log2(abs(trace_norm(partial_transpose(dense_mat, False))))
+
+def calc_eoe(dense_mat):
+    rho_a, rho_b = partial_trace(dense_mat)
+    return calc_vne(rho_a)
