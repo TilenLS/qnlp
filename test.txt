@@ -1,0 +1,208 @@
+Generating diagrams and converting to circuits:
+  0%|          | 0/105 [00:00<?, ?it/s]  1%|          | 1/105 [00:04<07:27,  4.30s/it]  2%|▏         | 2/105 [00:04<03:13,  1.87s/it]  3%|▎         | 3/105 [00:04<01:52,  1.10s/it]  4%|▍         | 4/105 [00:04<01:14,  1.36it/s]  5%|▍         | 5/105 [00:05<00:53,  1.88it/s]  6%|▌         | 6/105 [00:05<00:41,  2.40it/s]  7%|▋         | 7/105 [00:05<00:32,  2.97it/s]  8%|▊         | 8/105 [00:05<00:27,  3.53it/s]  9%|▊         | 9/105 [00:05<00:23,  4.04it/s] 10%|▉         | 10/105 [00:05<00:21,  4.34it/s] 10%|█         | 11/105 [00:06<00:20,  4.56it/s] 11%|█▏        | 12/105 [00:06<00:19,  4.86it/s] 12%|█▏        | 13/105 [00:06<00:18,  5.04it/s] 13%|█▎        | 14/105 [00:06<00:17,  5.25it/s] 14%|█▍        | 15/105 [00:06<00:17,  5.13it/s] 15%|█▌        | 16/105 [00:06<00:16,  5.36it/s] 16%|█▌        | 17/105 [00:07<00:16,  5.39it/s] 17%|█▋        | 18/105 [00:07<00:15,  5.48it/s] 18%|█▊        | 19/105 [00:07<00:15,  5.58it/s] 19%|█▉        | 20/105 [00:07<00:15,  5.58it/s] 20%|██        | 21/105 [00:07<00:15,  5.49it/s] 21%|██        | 22/105 [00:08<00:15,  5.37it/s] 22%|██▏       | 23/105 [00:08<00:14,  5.47it/s] 23%|██▎       | 24/105 [00:08<00:14,  5.54it/s] 24%|██▍       | 25/105 [00:08<00:14,  5.53it/s] 25%|██▍       | 26/105 [00:08<00:14,  5.51it/s] 26%|██▌       | 27/105 [00:08<00:14,  5.43it/s] 27%|██▋       | 28/105 [00:09<00:14,  5.37it/s] 28%|██▊       | 29/105 [00:09<00:14,  5.41it/s] 29%|██▊       | 30/105 [00:09<00:13,  5.49it/s] 30%|██▉       | 31/105 [00:09<00:13,  5.46it/s] 30%|███       | 32/105 [00:09<00:13,  5.48it/s] 31%|███▏      | 33/105 [00:10<00:12,  5.58it/s] 32%|███▏      | 34/105 [00:10<00:13,  5.45it/s] 33%|███▎      | 35/105 [00:10<00:12,  5.53it/s] 34%|███▍      | 36/105 [00:10<00:12,  5.56it/s] 35%|███▌      | 37/105 [00:10<00:12,  5.41it/s] 36%|███▌      | 38/105 [00:10<00:12,  5.55it/s] 37%|███▋      | 39/105 [00:11<00:12,  5.48it/s] 38%|███▊      | 40/105 [00:11<00:13,  4.66it/s] 39%|███▉      | 41/105 [00:11<00:13,  4.90it/s] 40%|████      | 42/105 [00:11<00:12,  4.94it/s] 41%|████      | 43/105 [00:12<00:11,  5.18it/s] 42%|████▏     | 44/105 [00:12<00:11,  5.39it/s] 43%|████▎     | 45/105 [00:12<00:10,  5.51it/s] 44%|████▍     | 46/105 [00:12<00:10,  5.56it/s] 45%|████▍     | 47/105 [00:12<00:11,  5.23it/s] 46%|████▌     | 48/105 [00:12<00:10,  5.35it/s] 47%|████▋     | 49/105 [00:13<00:10,  5.46it/s] 48%|████▊     | 50/105 [00:13<00:10,  5.38it/s] 49%|████▊     | 51/105 [00:13<00:10,  5.29it/s] 50%|████▉     | 52/105 [00:13<00:09,  5.34it/s] 50%|█████     | 53/105 [00:13<00:09,  5.50it/s] 51%|█████▏    | 54/105 [00:14<00:09,  5.57it/s] 52%|█████▏    | 55/105 [00:14<00:08,  5.64it/s] 53%|█████▎    | 56/105 [00:14<00:08,  5.64it/s] 54%|█████▍    | 57/105 [00:14<00:08,  5.59it/s] 55%|█████▌    | 58/105 [00:14<00:08,  5.59it/s] 56%|█████▌    | 59/105 [00:14<00:08,  5.66it/s] 57%|█████▋    | 60/105 [00:15<00:07,  5.72it/s] 58%|█████▊    | 61/105 [00:15<00:07,  5.80it/s] 59%|█████▉    | 62/105 [00:15<00:07,  5.80it/s] 60%|██████    | 63/105 [00:15<00:07,  5.78it/s] 61%|██████    | 64/105 [00:15<00:07,  5.71it/s] 62%|██████▏   | 65/105 [00:15<00:07,  5.69it/s] 63%|██████▎   | 66/105 [00:16<00:06,  5.73it/s] 64%|██████▍   | 67/105 [00:16<00:06,  5.79it/s] 65%|██████▍   | 68/105 [00:16<00:06,  5.65it/s] 66%|██████▌   | 69/105 [00:16<00:06,  5.54it/s] 67%|██████▋   | 70/105 [00:16<00:06,  5.57it/s] 68%|██████▊   | 71/105 [00:17<00:06,  5.65it/s] 69%|██████▊   | 72/105 [00:17<00:05,  5.70it/s] 70%|██████▉   | 73/105 [00:17<00:05,  5.71it/s] 70%|███████   | 74/105 [00:17<00:05,  5.70it/s] 71%|███████▏  | 75/105 [00:17<00:05,  5.74it/s] 72%|███████▏  | 76/105 [00:17<00:05,  5.74it/s] 73%|███████▎  | 77/105 [00:18<00:04,  5.76it/s] 74%|███████▍  | 78/105 [00:18<00:04,  5.67it/s] 75%|███████▌  | 79/105 [00:18<00:04,  5.69it/s] 76%|███████▌  | 80/105 [00:18<00:04,  5.67it/s] 77%|███████▋  | 81/105 [00:18<00:04,  5.64it/s] 78%|███████▊  | 82/105 [00:18<00:04,  5.58it/s] 79%|███████▉  | 83/105 [00:19<00:03,  5.72it/s] 80%|████████  | 84/105 [00:19<00:03,  5.68it/s] 81%|████████  | 85/105 [00:19<00:03,  5.62it/s] 82%|████████▏ | 86/105 [00:19<00:03,  5.66it/s] 83%|████████▎ | 87/105 [00:19<00:03,  5.72it/s] 84%|████████▍ | 88/105 [00:19<00:02,  5.76it/s] 85%|████████▍ | 89/105 [00:20<00:02,  5.71it/s] 86%|████████▌ | 90/105 [00:20<00:02,  5.61it/s] 87%|████████▋ | 91/105 [00:20<00:02,  5.53it/s] 88%|████████▊ | 92/105 [00:20<00:02,  5.52it/s] 89%|████████▊ | 93/105 [00:20<00:02,  5.61it/s] 90%|████████▉ | 94/105 [00:21<00:01,  5.68it/s] 90%|█████████ | 95/105 [00:21<00:01,  5.65it/s] 91%|█████████▏| 96/105 [00:21<00:01,  5.72it/s] 92%|█████████▏| 97/105 [00:21<00:01,  5.75it/s] 93%|█████████▎| 98/105 [00:21<00:01,  5.71it/s] 94%|█████████▍| 99/105 [00:21<00:01,  5.68it/s] 95%|█████████▌| 100/105 [00:22<00:00,  5.70it/s] 96%|█████████▌| 101/105 [00:22<00:00,  5.71it/s] 97%|█████████▋| 102/105 [00:22<00:00,  4.60it/s] 98%|█████████▊| 103/105 [00:22<00:00,  4.74it/s] 99%|█████████▉| 104/105 [00:22<00:00,  5.03it/s]100%|██████████| 105/105 [00:23<00:00,  5.13it/s]100%|██████████| 105/105 [00:23<00:00,  4.54it/s]
+  0%|          | 0/26 [00:00<?, ?it/s]  4%|▍         | 1/26 [00:00<00:04,  5.69it/s]  8%|▊         | 2/26 [00:00<00:04,  5.61it/s] 12%|█▏        | 3/26 [00:00<00:04,  5.45it/s] 15%|█▌        | 4/26 [00:00<00:03,  5.58it/s] 19%|█▉        | 5/26 [00:00<00:03,  5.64it/s] 23%|██▎       | 6/26 [00:01<00:03,  5.62it/s] 27%|██▋       | 7/26 [00:01<00:03,  5.67it/s] 31%|███       | 8/26 [00:01<00:03,  5.54it/s] 35%|███▍      | 9/26 [00:01<00:03,  5.56it/s] 38%|███▊      | 10/26 [00:01<00:02,  5.55it/s] 42%|████▏     | 11/26 [00:01<00:02,  5.67it/s] 46%|████▌     | 12/26 [00:02<00:02,  5.75it/s] 50%|█████     | 13/26 [00:02<00:02,  5.73it/s] 54%|█████▍    | 14/26 [00:02<00:02,  5.71it/s] 58%|█████▊    | 15/26 [00:02<00:01,  5.71it/s] 62%|██████▏   | 16/26 [00:02<00:01,  5.66it/s] 65%|██████▌   | 17/26 [00:03<00:01,  5.75it/s] 69%|██████▉   | 18/26 [00:03<00:01,  5.72it/s] 73%|███████▎  | 19/26 [00:03<00:01,  5.44it/s] 77%|███████▋  | 20/26 [00:03<00:01,  5.37it/s] 81%|████████  | 21/26 [00:03<00:00,  5.53it/s] 85%|████████▍ | 22/26 [00:03<00:00,  5.64it/s] 88%|████████▊ | 23/26 [00:04<00:00,  5.71it/s] 92%|█████████▏| 24/26 [00:04<00:00,  5.46it/s] 96%|█████████▌| 25/26 [00:04<00:00,  5.50it/s]100%|██████████| 26/26 [00:04<00:00,  5.58it/s]100%|██████████| 26/26 [00:04<00:00,  5.60it/s]
+  0%|          | 0/33 [00:00<?, ?it/s]  3%|▎         | 1/33 [00:00<00:05,  5.80it/s]  6%|▌         | 2/33 [00:00<00:05,  5.64it/s]  9%|▉         | 3/33 [00:00<00:05,  5.56it/s] 12%|█▏        | 4/33 [00:00<00:05,  5.54it/s] 15%|█▌        | 5/33 [00:00<00:04,  5.64it/s] 18%|█▊        | 6/33 [00:01<00:04,  5.63it/s] 21%|██        | 7/33 [00:01<00:04,  5.44it/s] 24%|██▍       | 8/33 [00:01<00:04,  5.54it/s] 27%|██▋       | 9/33 [00:01<00:04,  5.64it/s] 30%|███       | 10/33 [00:01<00:04,  5.71it/s] 33%|███▎      | 11/33 [00:01<00:04,  5.49it/s] 36%|███▋      | 12/33 [00:02<00:03,  5.59it/s] 39%|███▉      | 13/33 [00:02<00:03,  5.61it/s] 42%|████▏     | 14/33 [00:02<00:03,  5.55it/s] 45%|████▌     | 15/33 [00:02<00:03,  5.56it/s] 48%|████▊     | 16/33 [00:02<00:03,  5.58it/s] 52%|█████▏    | 17/33 [00:03<00:02,  5.65it/s] 55%|█████▍    | 18/33 [00:03<00:02,  5.72it/s] 58%|█████▊    | 19/33 [00:03<00:02,  5.74it/s] 61%|██████    | 20/33 [00:03<00:02,  5.74it/s] 64%|██████▎   | 21/33 [00:03<00:02,  5.82it/s] 67%|██████▋   | 22/33 [00:03<00:01,  5.74it/s] 70%|██████▉   | 23/33 [00:04<00:01,  5.68it/s] 73%|███████▎  | 24/33 [00:04<00:01,  5.76it/s] 76%|███████▌  | 25/33 [00:04<00:01,  5.78it/s] 79%|███████▉  | 26/33 [00:04<00:01,  5.73it/s] 82%|████████▏ | 27/33 [00:04<00:01,  5.78it/s] 85%|████████▍ | 28/33 [00:04<00:00,  5.81it/s] 88%|████████▊ | 29/33 [00:05<00:00,  5.67it/s] 91%|█████████ | 30/33 [00:05<00:00,  5.75it/s] 94%|█████████▍| 31/33 [00:05<00:00,  5.81it/s] 97%|█████████▋| 32/33 [00:05<00:00,  5.87it/s]100%|██████████| 33/33 [00:05<00:00,  5.77it/s]100%|██████████| 33/33 [00:05<00:00,  5.68it/s]
+Epoch 1:    train/loss: 1.0318   valid/loss: 1.4615   train/err: 0.4192   valid/err: 0.4386
+Epoch 2:    train/loss: 1.0791   valid/loss: 0.8108   train/err: 0.4102   valid/err: 0.3570
+Epoch 3:    train/loss: 1.3684   valid/loss: 0.4692   train/err: 0.3924   valid/err: 0.2835
+Epoch 4:    train/loss: 1.0439   valid/loss: 0.7837   train/err: 0.3877   valid/err: 0.3490
+Epoch 5:    train/loss: 1.1776   valid/loss: 0.9013   train/err: 0.4233   valid/err: 0.3771
+Epoch 6:    train/loss: 1.4160   valid/loss: 1.0465   train/err: 0.3895   valid/err: 0.3963
+Epoch 7:    train/loss: 0.9008   valid/loss: 1.3375   train/err: 0.3724   valid/err: 0.4086
+Epoch 8:    train/loss: 0.6995   valid/loss: 1.4720   train/err: 0.3757   valid/err: 0.4285
+Epoch 9:    train/loss: 0.6770   valid/loss: 1.3378   train/err: 0.3675   valid/err: 0.4264
+Epoch 10:   train/loss: 0.4445   valid/loss: 1.2750   train/err: 0.3562   valid/err: 0.4162
+Epoch 11:   train/loss: 1.0547   valid/loss: 0.7673   train/err: 0.4206   valid/err: 0.3397
+Epoch 12:   train/loss: 1.1093   valid/loss: 0.8011   train/err: 0.3806   valid/err: 0.3310
+Epoch 13:   train/loss: 0.9878   valid/loss: 0.8748   train/err: 0.3533   valid/err: 0.3485
+Epoch 14:   train/loss: 1.1272   valid/loss: 0.9081   train/err: 0.3789   valid/err: 0.3545
+Epoch 15:   train/loss: 0.5267   valid/loss: 1.0173   train/err: 0.3777   valid/err: 0.3702
+Epoch 16:   train/loss: 0.7293   valid/loss: 0.6742   train/err: 0.3758   valid/err: 0.3390
+Epoch 17:   train/loss: 0.8344   valid/loss: 1.0269   train/err: 0.3737   valid/err: 0.3563
+Epoch 18:   train/loss: 0.7105   valid/loss: 0.9124   train/err: 0.3604   valid/err: 0.3908
+Epoch 19:   train/loss: 0.8659   valid/loss: 0.8794   train/err: 0.3981   valid/err: 0.3591
+Epoch 20:   train/loss: 0.7123   valid/loss: 0.7931   train/err: 0.3813   valid/err: 0.3561
+Epoch 21:   train/loss: 0.5523   valid/loss: 0.5568   train/err: 0.3477   valid/err: 0.3053
+Epoch 22:   train/loss: 0.8566   valid/loss: 0.4954   train/err: 0.3666   valid/err: 0.2889
+Epoch 23:   train/loss: 1.1170   valid/loss: 0.5154   train/err: 0.4027   valid/err: 0.2987
+Epoch 24:   train/loss: 0.6551   valid/loss: 0.5947   train/err: 0.3709   valid/err: 0.3231
+Epoch 25:   train/loss: 1.5187   valid/loss: 0.7297   train/err: 0.3862   valid/err: 0.3458
+Epoch 26:   train/loss: 0.8417   valid/loss: 0.8300   train/err: 0.3913   valid/err: 0.3586
+Epoch 27:   train/loss: 1.0602   valid/loss: 0.8028   train/err: 0.3564   valid/err: 0.3566
+Epoch 28:   train/loss: 1.1883   valid/loss: 0.7313   train/err: 0.3728   valid/err: 0.3406
+Epoch 29:   train/loss: 0.7390   valid/loss: 0.7457   train/err: 0.3652   valid/err: 0.3194
+Epoch 30:   train/loss: 0.8091   valid/loss: 1.0049   train/err: 0.3411   valid/err: 0.3679
+Epoch 31:   train/loss: 0.8230   valid/loss: 1.0825   train/err: 0.3361   valid/err: 0.3874
+Epoch 32:   train/loss: 0.6377   valid/loss: 1.0636   train/err: 0.3383   valid/err: 0.3980
+Epoch 33:   train/loss: 0.6626   valid/loss: 0.9694   train/err: 0.3457   valid/err: 0.3690
+Epoch 34:   train/loss: 1.1608   valid/loss: 1.1164   train/err: 0.3543   valid/err: 0.4158
+Epoch 35:   train/loss: 0.7500   valid/loss: 1.2775   train/err: 0.3450   valid/err: 0.4285
+Epoch 36:   train/loss: 0.7755   valid/loss: 1.2064   train/err: 0.3511   valid/err: 0.4186
+Epoch 37:   train/loss: 0.8633   valid/loss: 1.3001   train/err: 0.3255   valid/err: 0.4438
+Epoch 38:   train/loss: 0.5408   valid/loss: 1.2671   train/err: 0.3464   valid/err: 0.4243
+Epoch 39:   train/loss: 0.8154   valid/loss: 1.5777   train/err: 0.3540   valid/err: 0.4433
+Epoch 40:   train/loss: 1.2301   valid/loss: 1.6541   train/err: 0.3497   valid/err: 0.4623
+Epoch 41:   train/loss: 0.5402   valid/loss: 1.5893   train/err: 0.3456   valid/err: 0.4397
+Epoch 42:   train/loss: 0.7953   valid/loss: 1.3801   train/err: 0.3489   valid/err: 0.4315
+Epoch 43:   train/loss: 0.7730   valid/loss: 1.5906   train/err: 0.3403   valid/err: 0.4274
+Epoch 44:   train/loss: 0.4772   valid/loss: 1.7744   train/err: 0.3347   valid/err: 0.4321
+Epoch 45:   train/loss: 0.8587   valid/loss: 1.8939   train/err: 0.3170   valid/err: 0.4340
+Epoch 46:   train/loss: 0.6720   valid/loss: 1.7527   train/err: 0.3093   valid/err: 0.4263
+Epoch 47:   train/loss: 0.6140   valid/loss: 1.7847   train/err: 0.3138   valid/err: 0.4397
+Epoch 48:   train/loss: 0.6723   valid/loss: 1.9065   train/err: 0.3254   valid/err: 0.4579
+Epoch 49:   train/loss: 0.2802   valid/loss: 1.6454   train/err: 0.3159   valid/err: 0.4272
+Epoch 50:   train/loss: 0.7358   valid/loss: 1.5601   train/err: 0.3003   valid/err: 0.4168
+Epoch 51:   train/loss: 0.6090   valid/loss: 1.4723   train/err: 0.2883   valid/err: 0.3987
+Epoch 52:   train/loss: 0.3430   valid/loss: 1.3750   train/err: 0.3011   valid/err: 0.3917
+Epoch 53:   train/loss: 0.3278   valid/loss: 1.4448   train/err: 0.2808   valid/err: 0.4083
+Epoch 54:   train/loss: 0.4678   valid/loss: 1.4218   train/err: 0.2882   valid/err: 0.3950
+Epoch 55:   train/loss: 0.7524   valid/loss: 1.4262   train/err: 0.3066   valid/err: 0.4035
+Epoch 56:   train/loss: 0.5135   valid/loss: 1.3851   train/err: 0.2754   valid/err: 0.3985
+Epoch 57:   train/loss: 0.4925   valid/loss: 1.4170   train/err: 0.3042   valid/err: 0.4145
+Epoch 58:   train/loss: 0.7500   valid/loss: 1.4249   train/err: 0.2909   valid/err: 0.4151
+Epoch 59:   train/loss: 0.4081   valid/loss: 1.4083   train/err: 0.2821   valid/err: 0.4016
+Epoch 60:   train/loss: 0.3332   valid/loss: 1.3886   train/err: 0.2888   valid/err: 0.3979
+Epoch 61:   train/loss: 0.2880   valid/loss: 1.4049   train/err: 0.2871   valid/err: 0.4070
+Epoch 62:   train/loss: 0.5537   valid/loss: 1.6120   train/err: 0.2948   valid/err: 0.4194
+Epoch 63:   train/loss: 0.5757   valid/loss: 1.4839   train/err: 0.2932   valid/err: 0.4323
+Epoch 64:   train/loss: 0.3919   valid/loss: 1.3890   train/err: 0.2647   valid/err: 0.4182
+Epoch 65:   train/loss: 0.5799   valid/loss: 1.4029   train/err: 0.2760   valid/err: 0.4146
+Epoch 66:   train/loss: 0.3037   valid/loss: 1.4147   train/err: 0.2700   valid/err: 0.4173
+Epoch 67:   train/loss: 0.5054   valid/loss: 1.3234   train/err: 0.2678   valid/err: 0.4089
+Epoch 68:   train/loss: 0.5181   valid/loss: 1.3117   train/err: 0.2809   valid/err: 0.4046
+Epoch 69:   train/loss: 0.3944   valid/loss: 1.4060   train/err: 0.2660   valid/err: 0.4106
+Epoch 70:   train/loss: 0.3679   valid/loss: 1.4001   train/err: 0.2730   valid/err: 0.4178
+Epoch 71:   train/loss: 0.5114   valid/loss: 1.2998   train/err: 0.2928   valid/err: 0.4168
+Epoch 72:   train/loss: 0.3665   valid/loss: 1.3145   train/err: 0.2848   valid/err: 0.4224
+Epoch 73:   train/loss: 0.7222   valid/loss: 1.3251   train/err: 0.2625   valid/err: 0.4230
+Epoch 74:   train/loss: 0.5078   valid/loss: 1.3525   train/err: 0.2662   valid/err: 0.4263
+Epoch 75:   train/loss: 0.6871   valid/loss: 1.2395   train/err: 0.2633   valid/err: 0.4186
+Epoch 76:   train/loss: 0.5938   valid/loss: 1.2771   train/err: 0.2923   valid/err: 0.4231
+Epoch 77:   train/loss: 0.4758   valid/loss: 1.3141   train/err: 0.2722   valid/err: 0.4374
+Epoch 78:   train/loss: 0.7182   valid/loss: 1.3974   train/err: 0.2724   valid/err: 0.4340
+Epoch 79:   train/loss: 0.5712   valid/loss: 1.5112   train/err: 0.2830   valid/err: 0.4370
+Epoch 80:   train/loss: 0.5197   valid/loss: 1.5175   train/err: 0.2869   valid/err: 0.4395
+Epoch 81:   train/loss: 0.3045   valid/loss: 1.4834   train/err: 0.2626   valid/err: 0.4361
+Epoch 82:   train/loss: 0.8035   valid/loss: 1.5046   train/err: 0.2733   valid/err: 0.4332
+Epoch 83:   train/loss: 0.4016   valid/loss: 1.3318   train/err: 0.2902   valid/err: 0.4144
+Epoch 84:   train/loss: 0.4250   valid/loss: 1.3547   train/err: 0.2540   valid/err: 0.4161
+Epoch 85:   train/loss: 0.5515   valid/loss: 1.3325   train/err: 0.2410   valid/err: 0.4146
+Epoch 86:   train/loss: 0.3364   valid/loss: 1.3454   train/err: 0.2386   valid/err: 0.4125
+Epoch 87:   train/loss: 0.5144   valid/loss: 1.3816   train/err: 0.2500   valid/err: 0.4173
+Epoch 88:   train/loss: 0.2934   valid/loss: 1.4027   train/err: 0.2622   valid/err: 0.4138
+Epoch 89:   train/loss: 0.4664   valid/loss: 1.4767   train/err: 0.2614   valid/err: 0.4181
+Epoch 90:   train/loss: 0.3669   valid/loss: 1.4203   train/err: 0.2695   valid/err: 0.4182
+Epoch 91:   train/loss: 0.2408   valid/loss: 1.4328   train/err: 0.2398   valid/err: 0.4281
+Epoch 92:   train/loss: 0.2772   valid/loss: 1.4390   train/err: 0.2701   valid/err: 0.4307
+Epoch 93:   train/loss: 0.2604   valid/loss: 1.3790   train/err: 0.2664   valid/err: 0.4233
+Epoch 94:   train/loss: 0.1979   valid/loss: 1.3665   train/err: 0.2561   valid/err: 0.4276
+Epoch 95:   train/loss: 0.2727   valid/loss: 1.3463   train/err: 0.2512   valid/err: 0.4228
+Epoch 96:   train/loss: 0.3962   valid/loss: 1.3723   train/err: 0.2539   valid/err: 0.4299
+Epoch 97:   train/loss: 0.4004   valid/loss: 1.3603   train/err: 0.2443   valid/err: 0.4242
+Epoch 98:   train/loss: 0.2739   valid/loss: 1.3381   train/err: 0.2534   valid/err: 0.4220
+Epoch 99:   train/loss: 0.3894   valid/loss: 1.3402   train/err: 0.2390   valid/err: 0.4164
+Epoch 100:  train/loss: 0.4025   valid/loss: 1.3727   train/err: 0.2459   valid/err: 0.4238
+Epoch 101:  train/loss: 0.2664   valid/loss: 1.3464   train/err: 0.2202   valid/err: 0.4248
+Epoch 102:  train/loss: 0.4104   valid/loss: 1.3234   train/err: 0.2336   valid/err: 0.4221
+Epoch 103:  train/loss: 0.3734   valid/loss: 1.4499   train/err: 0.2201   valid/err: 0.4399
+Epoch 104:  train/loss: 0.4520   valid/loss: 1.4889   train/err: 0.2412   valid/err: 0.4431
+Epoch 105:  train/loss: 0.2506   valid/loss: 1.4602   train/err: 0.2436   valid/err: 0.4451
+Epoch 106:  train/loss: 0.3469   valid/loss: 1.4396   train/err: 0.2252   valid/err: 0.4472
+Epoch 107:  train/loss: 0.3463   valid/loss: 1.4241   train/err: 0.2407   valid/err: 0.4434
+Epoch 108:  train/loss: 0.2015   valid/loss: 1.4116   train/err: 0.2159   valid/err: 0.4429
+Epoch 109:  train/loss: 0.2610   valid/loss: 1.3666   train/err: 0.2322   valid/err: 0.4387
+Epoch 110:  train/loss: 0.3964   valid/loss: 1.3323   train/err: 0.2398   valid/err: 0.4345
+Epoch 111:  train/loss: 0.3348   valid/loss: 1.3346   train/err: 0.2312   valid/err: 0.4344
+Epoch 112:  train/loss: 0.2362   valid/loss: 1.3479   train/err: 0.2180   valid/err: 0.4367
+Epoch 113:  train/loss: 0.3258   valid/loss: 1.3857   train/err: 0.2142   valid/err: 0.4419
+Epoch 114:  train/loss: 0.4681   valid/loss: 1.3497   train/err: 0.2322   valid/err: 0.4343
+Epoch 115:  train/loss: 0.4658   valid/loss: 1.3242   train/err: 0.2305   valid/err: 0.4324
+Epoch 116:  train/loss: 0.3761   valid/loss: 1.3542   train/err: 0.2346   valid/err: 0.4377
+Epoch 117:  train/loss: 0.2451   valid/loss: 1.3772   train/err: 0.2209   valid/err: 0.4392
+Epoch 118:  train/loss: 0.2510   valid/loss: 1.4145   train/err: 0.2445   valid/err: 0.4430
+Epoch 119:  train/loss: 0.3956   valid/loss: 1.4231   train/err: 0.2197   valid/err: 0.4432
+Epoch 120:  train/loss: 0.3155   valid/loss: 1.3958   train/err: 0.2251   valid/err: 0.4359
+Epoch 121:  train/loss: 0.2393   valid/loss: 1.3785   train/err: 0.2225   valid/err: 0.4321
+Epoch 122:  train/loss: 0.2795   valid/loss: 1.3663   train/err: 0.2002   valid/err: 0.4319
+Epoch 123:  train/loss: 0.3805   valid/loss: 1.3246   train/err: 0.2316   valid/err: 0.4243
+Epoch 124:  train/loss: 0.3689   valid/loss: 1.2610   train/err: 0.2421   valid/err: 0.4124
+Epoch 125:  train/loss: 0.2406   valid/loss: 1.2716   train/err: 0.2225   valid/err: 0.4130
+Epoch 126:  train/loss: 0.4647   valid/loss: 1.2551   train/err: 0.2192   valid/err: 0.4121
+Epoch 127:  train/loss: 0.3052   valid/loss: 1.2590   train/err: 0.2012   valid/err: 0.4141
+Epoch 128:  train/loss: 0.4979   valid/loss: 1.2792   train/err: 0.2062   valid/err: 0.4180
+Epoch 129:  train/loss: 0.4391   valid/loss: 1.2750   train/err: 0.2098   valid/err: 0.4154
+Epoch 130:  train/loss: 0.4162   valid/loss: 1.2678   train/err: 0.2066   valid/err: 0.4155
+Epoch 131:  train/loss: 0.3535   valid/loss: 1.2834   train/err: 0.2158   valid/err: 0.4153
+Epoch 132:  train/loss: 0.2722   valid/loss: 1.2906   train/err: 0.1985   valid/err: 0.4163
+Epoch 133:  train/loss: 0.2726   valid/loss: 1.2822   train/err: 0.1984   valid/err: 0.4152
+Epoch 134:  train/loss: 0.2756   valid/loss: 1.2494   train/err: 0.2192   valid/err: 0.4123
+Epoch 135:  train/loss: 0.2662   valid/loss: 1.2441   train/err: 0.2065   valid/err: 0.4104
+Epoch 136:  train/loss: 0.2731   valid/loss: 1.2265   train/err: 0.1985   valid/err: 0.4098
+Epoch 137:  train/loss: 0.3709   valid/loss: 1.2334   train/err: 0.2008   valid/err: 0.4114
+Epoch 138:  train/loss: 0.3510   valid/loss: 1.2354   train/err: 0.2131   valid/err: 0.4121
+Epoch 139:  train/loss: 0.3506   valid/loss: 1.2322   train/err: 0.2282   valid/err: 0.4086
+Epoch 140:  train/loss: 0.1959   valid/loss: 1.2706   train/err: 0.1880   valid/err: 0.4136
+Epoch 141:  train/loss: 0.2169   valid/loss: 1.2660   train/err: 0.2060   valid/err: 0.4126
+Epoch 142:  train/loss: 0.2625   valid/loss: 1.2700   train/err: 0.2047   valid/err: 0.4125
+Epoch 143:  train/loss: 0.2784   valid/loss: 1.2293   train/err: 0.2047   valid/err: 0.4059
+Epoch 144:  train/loss: 0.3761   valid/loss: 1.2316   train/err: 0.2028   valid/err: 0.4068
+Epoch 145:  train/loss: 0.3445   valid/loss: 1.2589   train/err: 0.1962   valid/err: 0.4109
+Epoch 146:  train/loss: 0.2848   valid/loss: 1.2546   train/err: 0.2023   valid/err: 0.4102
+Epoch 147:  train/loss: 0.4128   valid/loss: 1.2292   train/err: 0.2141   valid/err: 0.4071
+Epoch 148:  train/loss: 0.3947   valid/loss: 1.2369   train/err: 0.1920   valid/err: 0.4047
+Epoch 149:  train/loss: 0.2430   valid/loss: 1.2367   train/err: 0.1913   valid/err: 0.4050
+Epoch 150:  train/loss: 0.2651   valid/loss: 1.2630   train/err: 0.2194   valid/err: 0.4112
+Epoch 151:  train/loss: 0.2595   valid/loss: 1.2666   train/err: 0.1972   valid/err: 0.4110
+Epoch 152:  train/loss: 0.2235   valid/loss: 1.2668   train/err: 0.1941   valid/err: 0.4103
+Epoch 153:  train/loss: 0.2836   valid/loss: 1.2485   train/err: 0.1983   valid/err: 0.4075
+Epoch 154:  train/loss: 0.3439   valid/loss: 1.2265   train/err: 0.1932   valid/err: 0.4020
+Epoch 155:  train/loss: 0.2664   valid/loss: 1.2762   train/err: 0.1938   valid/err: 0.4093
+Epoch 156:  train/loss: 0.2484   valid/loss: 1.2606   train/err: 0.2110   valid/err: 0.4065
+Epoch 157:  train/loss: 0.2283   valid/loss: 1.2599   train/err: 0.1981   valid/err: 0.4045
+Epoch 158:  train/loss: 0.1622   valid/loss: 1.2831   train/err: 0.1986   valid/err: 0.4080
+Epoch 159:  train/loss: 0.2967   valid/loss: 1.3128   train/err: 0.1919   valid/err: 0.4135
+Epoch 160:  train/loss: 0.5329   valid/loss: 1.3096   train/err: 0.2059   valid/err: 0.4134
+Epoch 161:  train/loss: 0.3847   valid/loss: 1.3176   train/err: 0.1969   valid/err: 0.4081
+Epoch 162:  train/loss: 0.1311   valid/loss: 1.3296   train/err: 0.1897   valid/err: 0.4115
+Epoch 163:  train/loss: 0.3029   valid/loss: 1.3123   train/err: 0.1881   valid/err: 0.4096
+Epoch 164:  train/loss: 0.2569   valid/loss: 1.2975   train/err: 0.1858   valid/err: 0.4086
+Epoch 165:  train/loss: 0.2299   valid/loss: 1.3056   train/err: 0.1778   valid/err: 0.4076
+Epoch 166:  train/loss: 0.1424   valid/loss: 1.3114   train/err: 0.1924   valid/err: 0.4072
+Epoch 167:  train/loss: 0.3045   valid/loss: 1.3019   train/err: 0.1813   valid/err: 0.4057
+Epoch 168:  train/loss: 0.1755   valid/loss: 1.2968   train/err: 0.1767   valid/err: 0.4047
+Epoch 169:  train/loss: 0.2123   valid/loss: 1.3084   train/err: 0.1768   valid/err: 0.4062
+Epoch 170:  train/loss: 0.2350   valid/loss: 1.3168   train/err: 0.2051   valid/err: 0.4066
+Epoch 171:  train/loss: 0.2647   valid/loss: 1.3710   train/err: 0.1745   valid/err: 0.4094
+Epoch 172:  train/loss: 0.1947   valid/loss: 1.3522   train/err: 0.1733   valid/err: 0.4073
+Epoch 173:  train/loss: 0.2388   valid/loss: 1.3497   train/err: 0.1672   valid/err: 0.4082
+Epoch 174:  train/loss: 0.2566   valid/loss: 1.3450   train/err: 0.1898   valid/err: 0.4109
+Epoch 175:  train/loss: 0.2307   valid/loss: 1.3514   train/err: 0.1880   valid/err: 0.4115
+Epoch 176:  train/loss: 0.1832   valid/loss: 1.3604   train/err: 0.1942   valid/err: 0.4116
+Epoch 177:  train/loss: 0.4216   valid/loss: 1.3347   train/err: 0.1775   valid/err: 0.4083
+Epoch 178:  train/loss: 0.2092   valid/loss: 1.3378   train/err: 0.1789   valid/err: 0.4089
+Epoch 179:  train/loss: 0.2302   valid/loss: 1.3234   train/err: 0.1795   valid/err: 0.4064
+Epoch 180:  train/loss: 0.1699   valid/loss: 1.2916   train/err: 0.1909   valid/err: 0.4041
+Epoch 181:  train/loss: 0.2196   valid/loss: 1.3175   train/err: 0.1774   valid/err: 0.4078
+Epoch 182:  train/loss: 0.1967   valid/loss: 1.3014   train/err: 0.1854   valid/err: 0.4101
+Epoch 183:  train/loss: 0.3723   valid/loss: 1.3327   train/err: 0.1911   valid/err: 0.4123
+Epoch 184:  train/loss: 0.1726   valid/loss: 1.3357   train/err: 0.1716   valid/err: 0.4122
+Epoch 185:  train/loss: 0.1434   valid/loss: 1.3250   train/err: 0.1882   valid/err: 0.4120
+Epoch 186:  train/loss: 0.2919   valid/loss: 1.3307   train/err: 0.1810   valid/err: 0.4104
+Epoch 187:  train/loss: 0.2006   valid/loss: 1.3148   train/err: 0.1793   valid/err: 0.4077
+Epoch 188:  train/loss: 0.2566   valid/loss: 1.2974   train/err: 0.1787   valid/err: 0.4058
+Epoch 189:  train/loss: 0.2225   valid/loss: 1.3537   train/err: 0.1715   valid/err: 0.4129
+Epoch 190:  train/loss: 0.2326   valid/loss: 1.3614   train/err: 0.1540   valid/err: 0.4139
+Epoch 191:  train/loss: 0.2219   valid/loss: 1.3624   train/err: 0.1773   valid/err: 0.4137
+Epoch 192:  train/loss: 0.2405   valid/loss: 1.3632   train/err: 0.1672   valid/err: 0.4136
+Epoch 193:  train/loss: 0.1782   valid/loss: 1.3937   train/err: 0.1877   valid/err: 0.4170
+Epoch 194:  train/loss: 0.1765   valid/loss: 1.3699   train/err: 0.1787   valid/err: 0.4143
+Epoch 195:  train/loss: 0.2065   valid/loss: 1.3464   train/err: 0.1692   valid/err: 0.4138
+Epoch 196:  train/loss: 0.2012   valid/loss: 1.3419   train/err: 0.1445   valid/err: 0.4133
+Epoch 197:  train/loss: 0.2628   valid/loss: 1.3541   train/err: 0.1821   valid/err: 0.4145
+Epoch 198:  train/loss: 0.1485   valid/loss: 1.3527   train/err: 0.1666   valid/err: 0.4138
+Epoch 199:  train/loss: 0.2421   valid/loss: 1.4009   train/err: 0.1476   valid/err: 0.4201
+Epoch 200:  train/loss: 0.1857   valid/loss: 1.4129   train/err: 0.1776   valid/err: 0.4191
+
+Training completed!
+Learning parameters: 2024-07-24_13_18_53
+Test accuracy: 0.47723741513850687

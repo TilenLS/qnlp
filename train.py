@@ -6,19 +6,22 @@ from lambeq import NumpyModel, Dataset, QuantumTrainer, SPSAOptimizer, BinaryCro
 from util import sent2dig, gen_labels, train
 
 frac = int(sys.argv[1])/100
-join = str(sys.argv[2])
-cut = bool(sys.argv[3])
+sent_model = str(sys.argv[2])
+con_ref = bool(sys.argv[3])
 
 print("Generating diagrams and converting to circuits:")
+print(f"Using {100*frac} of the data")
+if con_ref:
+    print("Referents are connected.")
+else:
+    print("Referents are not connected")
+print(f"Sentences joined using: {sent_model}")
 
-train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv', 
-                                                          frac=frac, join=join, cut=cut)
-val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv', 
-                                                    frac=frac, join=join, cut=cut)
-test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv', 
-                                                       frac=frac, join=join, cut=cut)
+train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv', frac=frac, sent_model=sent_model, con_ref=con_ref) 
+val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv', frac=frac, sent_model=sent_model, con_ref=con_ref)  
+test_circuits, test_labels, test_diagrams = gen_labels('dataset/original_data/test.csv', frac=frac, sent_model=sent_model, con_ref=con_ref)   
 
-model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, use_jit=True)
+model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, use_jit=False)
 loss = BinaryCrossEntropyLoss(use_jax=True)
 acc = lambda y_hat, y: np.sqrt(np.mean((np.array(y_hat)-np.array(y))**2)/2)
 
