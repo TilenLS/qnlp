@@ -82,11 +82,18 @@ def gen_labels(path: str, verbose=False, frac=1, sent_model=None, con_ref=True):
         
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         label = [[0.25, 0.25],[0.25, 0.25]]
         if sent_model == 'spider' or sent_model == 'box':
             label = [0, 1] if col == 'referent' else [1,0]
         else:
             label = [[0,0],[0,1]] if col == 'referent' else [[1,0],[0,0]]
+=======
+        if sent_model == 'spider' or sent_model == 'box':
+            label = [0, 1] if col == 'referent' else [1,0]
+        else:
+            label = [[0, 0],[0, 1]] if col == 'referent' else [[1,0],[0,0]]
+>>>>>>> Stashed changes
 =======
         if sent_model == 'spider' or sent_model == 'box':
             label = [0, 1] if col == 'referent' else [1,0]
