@@ -80,25 +80,11 @@ def gen_labels(path: str, verbose=False, frac=1, sent_model=None, con_ref=True):
         col = random.choice(['referent', 'wrong_referent'])
         sent1, sent2, pro, ref = row[['sentence1', 'sentence2', 'pronoun', col]]
         
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        label = [[0.25, 0.25],[0.25, 0.25]]
+        #label = [[0.25, 0.25],[0.25, 0.25]]
         if sent_model == 'spider' or sent_model == 'box':
             label = [0, 1] if col == 'referent' else [1,0]
         else:
             label = [[0,0],[0,1]] if col == 'referent' else [[1,0],[0,0]]
-=======
-        if sent_model == 'spider' or sent_model == 'box':
-            label = [0, 1] if col == 'referent' else [1,0]
-        else:
-            label = [[0, 0],[0, 1]] if col == 'referent' else [[1,0],[0,0]]
->>>>>>> Stashed changes
-=======
-        if sent_model == 'spider' or sent_model == 'box':
-            label = [0, 1] if col == 'referent' else [1,0]
-        else:
-            label = [[0, 0],[0, 1]] if col == 'referent' else [[1,0],[0,0]]
->>>>>>> Stashed changes
 
         try:
             diagram = sent2dig(sent1.strip(), sent2.strip(), pro.strip(), ref.strip(), sent_model=sent_model, con_ref=con_ref)
