@@ -2,6 +2,7 @@ from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, Rewriter, Sim14
 from util import sent2dig
 import pandas as pd
 from tqdm import tqdm
+import sys, random, pickle
 
 remove_cups = RemoveCupsRewriter()
 
@@ -16,9 +17,9 @@ ansatz = Sim14Ansatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3)
 
 path = "data/og_data"
 
-gen_data(dir_path, file_name):
+def gen_data(dir_path, file_name):
     df = pd.read_csv(path + '/' + file_name + '.csv', index_col=0)
-    df = df.sample(frac=frac)
+    df = df.sample(frac=1)
     
     circuits, labels, diagrams = [],[],[]
     
