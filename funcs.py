@@ -160,7 +160,9 @@ def calc_neg(dense_mat, direct=True):
     else:
         return abs((trace_norm(rho_tra) - 1)/2)
 
-def log_neg(dense_mat):
+def log_neg(dense_mat, direct=True):
+    if direct:
+        return np.log2(2*calc_neg(dense_mat) + 1)
     return np.log2(abs(trace_norm(partial_transpose(dense_mat, False))))
 
 def calc_eoe(dense_mat):
