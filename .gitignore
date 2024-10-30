@@ -2,8 +2,10 @@
 .DS_Store
 .gitignore
 .ipynb_checkpoints
-err_logs/
-runs/*.local
+test_code/
+contextuality/
+discopro/
+figures/
 fasttext/
 nohup.out
 

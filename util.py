@@ -1,6 +1,6 @@
 from discopro.grammar import tensor
 from discopro.anaphora import connect_anaphora_on_top
-from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, UnifyCodomainRewriter, Rewriter, QuantumTrainer, Dataset, IQPAnsatz, NumpyModel
+from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, UnifyCodomainRewriter, Rewriter, QuantumTrainer, Dataset, IQPAnsatz, NumpyModel, Sim14Ansatz
 from lambeq.backend.grammar import Spider
 from lambeq.backend.quantum import Ry, Diagram, Box, qubit
 import pandas as pd 
@@ -30,7 +30,8 @@ N = AtomicType.NOUN
 S = AtomicType.SENTENCE
 P = AtomicType.PREPOSITIONAL_PHRASE
 
-ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3)
+#ansatz = IQPAnsatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3)
+ansatz = Sim14Ansatz({N: 1, S: 1, P:1}, n_layers=1, n_single_qubit_params=3)
 
 class QModel(NumpyModel):
     def __init__(self, use_jit: bool = False) -> None:
@@ -66,14 +67,9 @@ def sent2dig(sentence1: str, sentence2: str, pro: str, ref: str, sent_model=None
     diagram = rewriter(remove_cups(diagram)).normal_form()
     return diagram
 
-def gen_labels(path: str, verbose=False, frac=1, sent_model=None, con_ref=True):
+def gen_labels(path: str, frac=1, sent_model=None, con_ref=True, save=True):
     df = pd.read_csv(path, index_col=0)
     df = df.sample(frac=frac)
-    
-    if not os.path.exists(os.getcwd()+'/err_logs'):
-        os.mkdir(os.getcwd()+'/err_logs')
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
-    f = open("err_logs/log_"+path.split('/')[-1].split('.')[-2]+'_'+timestamp+".txt",'w')
     
     circuits, labels, diagrams = [],[],[]
     for i, row in tqdm(df.iterrows(), total=len(df), position=0, leave=True):
@@ -91,10 +87,12 @@ def gen_labels(path: str, verbose=False, frac=1, sent_model=None, con_ref=True):
             circuits.append(ansatz(diagram))
             labels.append(label)
         except Exception as err:
-            tqdm.write(f"Error: {err}".strip(), file=f)
-            if verbose:
-                tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
+            tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
     f.close()
+    if save:
+        f = open('dataset/data_cld_'+datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")+'.pkl', 'wb')
+        pickle.dump(list(zip(circuits, labels, diagrams)), f)
+        f.close()
     return circuits, labels, diagrams
 
 def train(trainer: QuantumTrainer, EPOCH_ARR: [int], BATCH_ARR: [int], SEED_N: int, train_dataset: Dataset, val_dataset: Dataset, test_dataset: Dataset):
@@ -129,7 +127,7 @@ class data_loader:
         # Measurement basis used in max violation CHSH experiment with their matrix representations
         self.onbs = (gen_basis(np.pi/2, np.pi/8)[0], gen_basis(np.pi/2, 5*np.pi/8)[0])
         self.observables = {'A': (get_observable('a1', 0, 0), get_observable('a2', np.pi/4, 0)),
-                            'B': (get_observable('b1', np.pi/8, 0), get_observable('b2', 5*np.pi/8, 0))}
+                            'B': (get_observable('b1', np.pi/8, 0), get_observable('b2', 3*np.pi/8, 0))}
 
     def read_df(self, path: str):
         if os.path.splitext(path)[-1] == '.csv':
