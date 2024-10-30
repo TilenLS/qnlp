@@ -39,8 +39,6 @@ model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, 
 loss = BinaryCrossEntropyLoss(use_jax=True)
 acc = lambda y_hat, y: np.sqrt(np.mean((np.array(y_hat)-np.array(y))**2)/2)
 
-
-
 train_dataset = Dataset(train_circuits, train_labels, batch_size=BATCH_SIZE)
 val_dataset = Dataset(val_circuits, val_labels, shuffle=True)
 test_dataset = Dataset(test_circuits, test_labels)

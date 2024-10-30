@@ -3,6 +3,9 @@
 .gitignore
 .ipynb_checkpoints
 err_logs/
+test_code/
+contextuality/
+discopro/
 runs/*.local
 fasttext/
 nohup.out
