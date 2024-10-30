@@ -34,7 +34,7 @@ gen_data(dir_path, file_name):
         except Exception as err:
             tqdm.write(f"Error: {err}".strip(), file=sys.stderr)
     
-    f = open('dataset/data_'+file_name+'-'+datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")+'.pkl', 'wb')
+    f = open('data/sim14_data/'+file_name+'.pkl', 'wb')
     pickle.dump(list(zip(circuits, labels, diagrams)), f)
     f.close()
 
