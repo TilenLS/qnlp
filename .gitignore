@@ -6,7 +6,6 @@ test_code/
 contextuality/
 discopro/
 figures/
-runs/*.local
 fasttext/
 nohup.out
 
