@@ -14,10 +14,10 @@ EPOCHS = 200
 #sent_model = str(sys.argv[2])
 #con_ref = bool(sys.argv[3])
 
-printf("===========(MODEL SUMMARY)===========", file=sys.stderr)
+print("===========(MODEL SUMMARY)===========", file=sys.stderr)
 print(f"Training for [{EPOCHS}] epochs with a batch size of [{BATCH_SIZE}] and initialise with seed [{SEED}]", file=sys.stderr)
 print(f"Using a numpy model with cross entropy loss and RMSE for accuracy", file=sys.stderr)
-printf("=====================================", file=sys.stderr)
+print("=====================================", file=sys.stderr)
 
 #train_circuits, train_labels, train_diagrams = gen_labels('dataset/original_data/train.csv', frac=frac, sent_model=sent_model, con_ref=con_ref) 
 #val_circuits, val_labels, val_diagrams = gen_labels('dataset/original_data/val.csv', frac=frac, sent_model=sent_model, con_ref=con_ref)  
@@ -29,16 +29,16 @@ f.close()
 f = open('data/sim14_data/val.pkl', 'rb')
 val_circuits, val_labels, val_diagrams = zip(*pickle.load(f))
 f.close()
-f = open('data/sim14_data/train.pkl', 'rb')
+f = open('data/sim14_data/test.pkl', 'rb')
 test_circuits, test_labels, test_diagrams = zip(*pickle.load(f))
 f.close()
 
 total_len = len(train_labels) + len(val_labels) + len(test_labels)
-printf("===========(DATA SUMMARY)===========", file=sys.stderr)
+print("===========(DATA SUMMARY)===========", file=sys.stderr)
 print(f"Training size: {len(train_labels)} ({len(train_labels)/total_len})", file=sys.stderr)
 print(f"Validation size: {len(val_labels)} ({len(val_labels)/total_len})", file=sys.stderr)
 print(f"Test size: {len(test_labels)} ({len(test_labels)/total_len})", file=sys.stderr)
-printf("=====================================", file=sys.stderr)
+print("=====================================", file=sys.stderr)
 
 model = NumpyModel.from_diagrams(train_circuits + val_circuits + test_circuits, use_jit=False)
 

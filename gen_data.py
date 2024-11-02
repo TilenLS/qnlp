@@ -1,7 +1,7 @@
 from lambeq import BobcatParser, AtomicType, RemoveCupsRewriter, Rewriter, Sim14Ansatz, IQPAnsatz
 from discopro.grammar import tensor
 from discopro.anaphora import connect_anaphora_on_top
-from util import sent2dig
+from lambeq.backend.grammar import Spider
 import pandas as pd
 from tqdm import tqdm
 import random, pickle, sys
